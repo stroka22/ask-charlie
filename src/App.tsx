@@ -16,6 +16,7 @@ import {
 } from '@heroicons/react/24/outline'
 import Button from './ui/Button'
 import AdminPage from './admin/AdminPage'
+import LoginPage from './admin/LoginPage'
 
 // Main app content with access to chat context
 function Hero() {
@@ -152,6 +153,7 @@ function AppContent() {
           <Route path="/" element={<Hero />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </main>
       
