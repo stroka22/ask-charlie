@@ -14,6 +14,7 @@ import {
   LightBulbIcon,
   GlobeAmericasIcon,
 } from '@heroicons/react/24/outline'
+import Button from './ui/Button'
 import AdminPage from './admin/AdminPage'
 
 // Main app content with access to chat context
@@ -28,32 +29,35 @@ function Hero() {
   }, [selectPersona, navigate])
 
   return (
-    <div className="container mx-auto px-4 py-12 md:py-16">
+    <div className="container mx-auto px-4 py-12 md:py-20">
+      <div className="max-w-3xl mx-auto text-center navy-panel p-8 relative z-10 rounded-2xl">
+        {/* accent stripe */}
+        <div className="accent-tricolor w-20 h-1 mx-auto mb-6 rounded-full" />
 
-      <div className="max-w-3xl mx-auto text-center relative z-10">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-brand-red via-white to-brand-blue bg-clip-text text-transparent">
-          Debate Charlie&nbsp;Kirk
+        <h1 className="faith-heading text-5xl md:text-6xl font-extrabold mb-6">
+          Debate&nbsp;Charlie&nbsp;Kirk
         </h1>
 
-        <div className="my-6 divider" />
-
-        <p className="text-xl text-white/80 mb-8">
-          Test your worldview against Charlie&apos;s conservative arguments or
-          switch to Lecture mode for guided explanations on faith, freedom, and
-          America.
+        <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed">
+          Test your worldview against Charlie's conservative arguments or switch to
+          Lecture&nbsp;mode for guided explanations on faith, freedom, and America.
         </p>
 
-        <button
-          onClick={handleStartDebate}
-          className="px-8 py-3 bg-brand-red hover:bg-brand-red/90 text-white font-bold rounded-full shadow-lg transition-colors focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 focus:ring-offset-navy-900"
-        >
-          Start the Debate
-        </button>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button onClick={handleStartDebate} size="lg">
+            Start the Debate
+          </Button>
+          <Link to="/admin">
+            <Button variant="secondary" size="lg">
+              Explore Admin
+            </Button>
+          </Link>
+        </div>
 
         {/* Feature cards */}
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {/* Card 1 */}
-          <div className="backdrop-blur-lg bg-navy-800/60 border border-white/10 rounded-xl p-3 flex flex-col items-center text-center">
+          <div className="navy-panel rounded-xl p-4 flex flex-col items-center text-center">
             <ScaleIcon className="w-7 h-7 text-brand-gold mb-2" />
             <h3 className="font-semibold mb-1">Challenge Ideas</h3>
             <p className="text-sm text-white/70">
@@ -61,7 +65,7 @@ function Hero() {
             </p>
           </div>
           {/* Card 2 */}
-          <div className="backdrop-blur-lg bg-navy-800/60 border border-white/10 rounded-xl p-3 flex flex-col items-center text-center">
+          <div className="navy-panel rounded-xl p-4 flex flex-col items-center text-center">
             <LightBulbIcon className="w-7 h-7 text-brand-gold mb-2" />
             <h3 className="font-semibold mb-1">Lecture Mode</h3>
             <p className="text-sm text-white/70">
@@ -69,7 +73,7 @@ function Hero() {
             </p>
           </div>
           {/* Card 3 */}
-          <div className="backdrop-blur-lg bg-navy-800/60 border border-white/10 rounded-xl p-3 flex flex-col items-center text-center">
+          <div className="navy-panel rounded-xl p-4 flex flex-col items-center text-center">
             <GlobeAmericasIcon className="w-7 h-7 text-brand-gold mb-2" />
             <h3 className="font-semibold mb-1">Patriotic &amp; Faith-First</h3>
             <p className="text-sm text-white/70">

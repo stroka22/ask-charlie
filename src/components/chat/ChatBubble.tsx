@@ -3,10 +3,10 @@ export default function ChatBubble({ role, content }: { role: 'user'|'assistant'
   return (
     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-2`}>
       <div
-        className={`max-w-[80%] whitespace-pre-wrap rounded-lg p-3
+        className={`max-w-[80%] whitespace-pre-wrap rounded-xl p-4 leading-relaxed text-[15px]
         ${isUser
-          ? 'bg-brand-red text-white shadow-lg ring-1 ring-brand-red/60'
-          : 'bg-gradient-to-br from-brand-blue via-navy-800 to-navy-900 text-white border border-brand-blue/40 shadow'}`
+          ? 'bg-brand-red/90 text-white shadow-lg ring-1 ring-brand-red/70'
+          : 'bg-gradient-to-br from-brand-blue/70 via-navy-800/70 to-navy-900/70 text-white border border-brand-gold/30 shadow'}`
         }
       >
         {content}

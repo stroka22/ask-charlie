@@ -13,7 +13,8 @@ html, body, #root {
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  /* switched to Manrope for Design v3 */
+  font-family: 'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
 }
 
 body {
@@ -85,7 +86,8 @@ body {
 
 /* Slightly stronger beams */
 .flag-beams{
-  opacity:.45;
+  /* toned down slightly for Design v3; add this class only where effect desired */
+  opacity:.35;
 }
 
 /* ------------------------------------------------------------------
@@ -108,4 +110,56 @@ body {
   background:linear-gradient(180deg,rgba(30,58,138,.15),rgba(11,16,32,.6));
   border:1px solid rgba(255,255,255,.1);
   backdrop-filter:blur(6px);
+}
+
+/* ------------------------------------------------------------------
+   Patriotic / Faith extras (v3)
+   ------------------------------------------------------------------ */
+
+/* Gold → white gradient heading for scripture / faith quotes */
+.faith-heading{
+  background-image:linear-gradient(90deg,#d4af37 0%, #ffffff 70%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+/* Panel surface: subtle navy glass */
+.navy-panel{
+  background:rgba(11,16,32,.65);
+  backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.08);
+}
+
+/* Constrained image helper */
+.img-constrained{
+  max-width:100%;
+  height:auto;
+  object-fit:contain;
+}
+@media (max-width:639px){ /* <= sm */
+  .img-constrained{ max-height:40vh; }
+}
+@media (min-width:640px){ /* sm and up */
+  .img-constrained{ max-height:55vh; }
+}
+
+/* ------------------------------------------------------------------
+   Media defaults
+   ------------------------------------------------------------------ */
+
+/* Global media sizing to prevent overflow */
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Utility for explicitly responsive images */
+.responsive-img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }

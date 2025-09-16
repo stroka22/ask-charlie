@@ -14,6 +14,8 @@ export default function ChatInterface() {
   if (!persona) return null;
 
   return (
+    <div className="lg:grid lg:grid-cols-[2fr_1fr] lg:gap-6">
+    {/* Main chat area */}
     <Card className="backdrop-blur-lg bg-navy-800/70">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
@@ -55,5 +57,18 @@ export default function ChatInterface() {
 
       <ChatInput onSend={(t) => sendMessage(t)} disabled={isTyping} />
     </Card>
+
+    {/* Side panel (hidden on small screens) */}
+    <Card
+      className="hidden lg:block navy-panel h-fit backdrop-blur-md"
+      aria-label="Sources and outline panel"
+    >
+      <h3 className="text-lg font-bold mb-2 faith-heading">Sources &amp; Outline</h3>
+      <p className="text-sm text-white/70">
+        Relevant references and a structured outline will appear here once
+        available.
+      </p>
+    </Card>
+    </div>
   );
 }
