@@ -154,6 +154,9 @@ video,
 canvas {
   max-width: 100%;
   height: auto;
+  /* prevent hero / feature graphics from exceeding viewport height */
+  max-height: 80vh;
+  object-fit: contain;
   display: block;
 }
 
