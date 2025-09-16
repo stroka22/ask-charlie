@@ -62,21 +62,51 @@ export default function PersonasTab() {
         </label>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      {/* Table ‑ header (hidden on small screens) */}
+      <div className="hidden sm:grid grid-cols-[auto_1fr_auto] px-3 py-2 text-xs uppercase tracking-wide text-white/60 border-b border-white/10">
+        <div>Avatar / Name</div>
+        <div>Default Mode</div>
+        <div className="text-right">Actions</div>
+      </div>
+
+      {/* Rows */}
+      <div className="divide-y divide-white/10">
         {list.map(p => (
-          <Card key={p.id}>
+          <div
+            key={p.id}
+            className="grid sm:grid-cols-[auto_1fr_auto] gap-3 px-3 py-3 items-center"
+          >
+            {/* Avatar + Name */}
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-brand-blue text-white flex items-center justify-center font-bold">{p.name?.[0]||'?'}</div>
-              <div>
-                <div className="font-semibold">{p.name}</div>
-                <div className="text-xs text-white/60">Default: {p.defaultMode||'Debate'}</div>
+              <div className="w-10 h-10 rounded-full bg-brand-blue text-white flex items-center justify-center font-bold shrink-0">
+                {p.name?.[0] || '?'}
               </div>
+              <div className="sm:hidden">
+                <div className="font-semibold">{p.name}</div>
+                <div className="text-xs text-white/60">{p.defaultMode || 'Debate'}</div>
+              </div>
+              <div className="hidden sm:block font-semibold">{p.name}</div>
             </div>
-            <div className="mt-3 flex gap-2">
-              <button className="px-2 py-1 text-sm bg-white/10 rounded" onClick={()=>onEdit(p)}>Edit</button>
-              <button className="px-2 py-1 text-sm bg-white/10 rounded" onClick={()=>onDelete(p.id)}>Delete</button>
+
+            {/* Default mode (only visible ≥ sm) */}
+            <div className="hidden sm:block text-white/80">{p.defaultMode || 'Debate'}</div>
+
+            {/* Actions */}
+            <div className="flex gap-2 justify-end">
+              <button
+                className="px-2 py-1 text-sm bg-white/10 rounded"
+                onClick={() => onEdit(p)}
+              >
+                Edit
+              </button>
+              <button
+                className="px-2 py-1 text-sm bg-white/10 rounded"
+                onClick={() => onDelete(p.id)}
+              >
+                Delete
+              </button>
             </div>
-          </Card>
+          </div>
         ))}
       </div>
 
@@ -85,22 +115,22 @@ export default function PersonasTab() {
           <Card className="space-y-3">
           <div className="grid md:grid-cols-2 gap-3">
             <label className="block">Name
-              <input className="w-full mt-1 bg-navy-700 rounded px-3 py-2" value={editing.name} onChange={e=>setEditing({...editing!, name: e.target.value})}/>
+              <input className="w-full mt-1 bg-navy-700/60 border border-white/10 rounded px-3 py-2" value={editing.name} onChange={e=>setEditing({...editing!, name: e.target.value})}/>
             </label>
             <label className="block">Default Mode
-              <select className="w-full mt-1 bg-navy-700 rounded px-3 py-2" value={editing.defaultMode||'Debate'} onChange={e=>setEditing({...editing!, defaultMode: e.target.value as any})}>
+              <select className="w-full mt-1 bg-navy-700/60 border border-white/10 rounded px-3 py-2" value={editing.defaultMode||'Debate'} onChange={e=>setEditing({...editing!, defaultMode: e.target.value as any})}>
                 <option>Debate</option>
                 <option>Lecture</option>
               </select>
             </label>
             <label className="block">Avatar URL
-              <input className="w-full mt-1 bg-navy-700 rounded px-3 py-2" value={editing.avatarUrl||''} onChange={e=>setEditing({...editing!, avatarUrl: e.target.value})}/>
+              <input className="w-full mt-1 bg-navy-700/60 border border-white/10 rounded px-3 py-2" value={editing.avatarUrl||''} onChange={e=>setEditing({...editing!, avatarUrl: e.target.value})}/>
             </label>
             <label className="block">Feature Image URL
-              <input className="w-full mt-1 bg-navy-700 rounded px-3 py-2" value={editing.featureImageUrl||''} onChange={e=>setEditing({...editing!, featureImageUrl: e.target.value})}/>
+              <input className="w-full mt-1 bg-navy-700/60 border border-white/10 rounded px-3 py-2" value={editing.featureImageUrl||''} onChange={e=>setEditing({...editing!, featureImageUrl: e.target.value})}/>
             </label>
             <label className="block md:col-span-2">System Prompt (Markdown)
-              <textarea className="w-full mt-1 bg-navy-700 rounded px-3 py-2 h-40" value={editing.systemPrompt} onChange={e=>setEditing({...editing!, systemPrompt: e.target.value})}/>
+              <textarea className="w-full mt-1 bg-navy-700/60 border border-white/10 rounded px-3 py-2 h-40" value={editing.systemPrompt} onChange={e=>setEditing({...editing!, systemPrompt: e.target.value})}/>
             </label>
           </div>
           <div className="flex gap-2">
