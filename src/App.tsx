@@ -4,7 +4,6 @@ import { ChatProvider, useChat } from './contexts/ChatContext'
 import CHARLIE from './data/personas/charlieKirk'
 import ChatInterface from './components/chat/ChatInterface'
 import {
-  BrowserRouter,
   Routes,
   Route,
   Link,
@@ -115,14 +114,7 @@ function ChatPage() {
 }
 
 function AppContent() {
-  const { persona, selectPersona } = useChat();
-
-  // Function to handle starting the debate
-  const handleStartDebate = useCallback(() => {
-    selectPersona(CHARLIE);
-    // Scroll to top for better UX when chat opens
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [selectPersona]);
+  /* No local chat hooks needed here; Hero and ChatPage handle persona logic */
 
   return (
     <div className="min-h-screen flex flex-col bg-navy-gradient">
