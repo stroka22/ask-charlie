@@ -15,9 +15,13 @@ const hasSupabaseConfig = !!(
 // Type for our client (or null when not configured)
 type SupabaseClient = {
   auth: {
-    signInWithOtp: (params: { email: string }) => Promise<any>;
+    signInWithOtp: (params: { email: string; options?: any }) => Promise<any>;
     signOut: () => Promise<any>;
     getSession: () => Promise<{ data: { session: Session | null } }>;
+    exchangeCodeForSession: (authCode: string) => Promise<any>;
+    onAuthStateChange: (
+      cb: (event: string, session: Session | null) => void,
+    ) => { data: { subscription: { unsubscribe: () => void } } };
   }
 };
 
@@ -65,7 +69,11 @@ export async function signIn(email: string): Promise<{ success: boolean; error?:
   }
   
   try {
-    const { error } = await client.auth.signInWithOtp({ email });
+    const { error } = await client.auth.signInWithOtp({
+      email,
+      // redirect back to /login so the app can finalise the session and route to /admin
+      options: { emailRedirectTo: `${window.location.origin}/login` } as any,
+    });
     
     if (error) {
       return { success: false, error: error.message };
@@ -123,6 +131,29 @@ export async function getSession(): Promise<Session | null> {
   } catch (error) {
     console.error('Error getting session:', error);
     return null;
+  }
+}
+
+/**
+ * Exchange a one-time code (from magic-link / PKCE flow) for a session.
+ * @param code The `code` query-param value received on the redirect URL
+ * @returns true when the exchange succeeds
+ */
+export async function exchangeCodeForSession(code: string): Promise<boolean> {
+  const client = await getClient();
+  if (!client) return false;
+
+  try {
+    // Exchange the one-time auth code for a persistent session
+    const { error } = await client.auth.exchangeCodeForSession(code);
+    if (error) {
+      console.error('Error exchanging code for session:', error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error('Unexpected error exchanging code for session:', err);
+    return false;
   }
 }
 

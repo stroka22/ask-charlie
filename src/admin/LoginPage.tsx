@@ -1,12 +1,19 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { signIn, isSupabaseAuthAvailable } from '../services/supabaseClient';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  signIn,
+  isSupabaseAuthAvailable,
+  getSession,
+  getClient,
+  exchangeCodeForSession,
+} from '../services/supabaseClient';
 import Button from '../ui/Button';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,6 +38,46 @@ export default function LoginPage() {
     }
   };
   
+  /* ------------------------------------------------------------
+   *  On mount: handle magic-link return & existing sessions
+   * ---------------------------------------------------------- */
+  useEffect(() => {
+    let cleanup: (() => void) | undefined;
+
+    (async () => {
+      // 0. Check for ?code returned by Supabase magic link
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      if (code) {
+        await exchangeCodeForSession(code);
+        // clean URL then proceed to admin
+        window.history.replaceState({}, '', '/login');
+        navigate('/admin', { replace: true });
+        return;
+      }
+
+      // 1. Existing session? go straight to admin
+      const session = await getSession();
+      if (session) {
+        navigate('/admin', { replace: true });
+        return;
+      }
+
+      // 2. Listen for new sign-in events
+      const client = await getClient();
+      if (client) {
+        const { data: { subscription } } = client.auth.onAuthStateChange(
+          (event) => {
+            if (event === 'SIGNED_IN') navigate('/admin', { replace: true });
+          },
+        );
+        cleanup = () => subscription.unsubscribe();
+      }
+    })();
+
+    return () => cleanup?.();
+  }, [navigate]);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-navy-gradient p-4">
       <div className="navy-panel rounded-xl p-6 w-full max-w-md shadow-lg">
