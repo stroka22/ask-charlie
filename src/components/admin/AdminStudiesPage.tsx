@@ -754,7 +754,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
     <div className="space-y-6">
       {/* Status Messages */}
       {isLoading && (
-        <div className="p-3 bg-primary-100 text-primary-700 rounded">
+        <div className="p-3 bg-blue-100 text-blue-700 rounded">
           Loading...
         </div>
       )}
@@ -780,12 +780,12 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
             <button
               onClick={handleExportStudiesCSV}
               disabled={studies.length === 0 || isLoading}
-              className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 disabled:bg-gray-400 text-sm"
+              className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 text-sm"
             >
               Export CSV
             </button>
             
-            <label className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 disabled:bg-gray-400 text-sm cursor-pointer">
+            <label className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 text-sm cursor-pointer">
               Import CSV
               <input
                 type="file"
@@ -817,7 +817,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                 value={studyForm.title}
                 onChange={handleStudyInputChange}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
               />
             </div>
             
@@ -830,7 +830,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                 name="character_id"
                 value={studyForm.character_id}
                 onChange={handleStudyInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
               >
                 <option value="">None</option>
                 {characters.map(character => (
@@ -851,7 +851,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                 name="cover_image_url"
                 value={studyForm.cover_image_url}
                 onChange={handleStudyInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
               />
             </div>
             
@@ -865,7 +865,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                 name="subject"
                 value={studyForm.subject}
                 onChange={handleStudyInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
               />
             </div>
             
@@ -878,7 +878,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                 name="visibility"
                 value={studyForm.visibility}
                 onChange={handleStudyInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
               >
                 <option value="public">Public</option>
                 <option value="private">Private</option>
@@ -892,7 +892,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                 name="is_premium"
                 checked={studyForm.is_premium}
                 onChange={handleStudyInputChange}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
               />
               <label htmlFor="is_premium" className="ml-2 block text-sm font-medium text-gray-700">
                 Premium Content
@@ -910,7 +910,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
               rows={3}
               value={studyForm.description}
               onChange={handleStudyInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
             ></textarea>
           </div>
           
@@ -924,7 +924,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
               rows={3}
               value={studyForm.character_instructions}
               onChange={handleStudyInputChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
             ></textarea>
           </div>
           
@@ -932,7 +932,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-gray-400"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
             >
               {isLoading ? 'Saving...' : editingStudyId ? 'Update Study' : 'Add Study'}
             </button>
@@ -962,8 +962,8 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                   key={study.id} 
                   className={`border rounded-lg p-4 cursor-pointer transition-all ${
                     selectedStudy?.id === study.id 
-                      ? 'border-primary-500 bg-primary-50' 
-                      : 'border-gray-200 hover:border-primary-300 hover:bg-gray-50'
+                      ? 'border-blue-600 bg-blue-50' 
+                      : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
                   }`}
                   onClick={() => setSelectedStudy(study)}
                 >
@@ -1046,12 +1046,12 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
               <button
                 onClick={handleExportLessonsCSV}
                 disabled={lessons.length === 0 || isLoading}
-                className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 disabled:bg-gray-400 text-sm"
+                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 text-sm"
               >
                 Export CSV
               </button>
               
-              <label className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 disabled:bg-gray-400 text-sm cursor-pointer">
+              <label className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:bg-gray-400 text-sm cursor-pointer">
                 Import CSV
                 <input
                   type="file"
@@ -1083,7 +1083,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                   value={lessonForm.title}
                   onChange={handleLessonInputChange}
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
                 />
               </div>
               
@@ -1099,7 +1099,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                   onChange={handleLessonInputChange}
                   required
                   min="0"
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
                 />
               </div>
               
@@ -1113,7 +1113,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                   name="scripture_refs"
                   value={lessonForm.scripture_refs}
                   onChange={handleLessonInputChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
                 />
               </div>
             </div>
@@ -1128,7 +1128,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                 rows={3}
                 value={lessonForm.summary}
                 onChange={handleLessonInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
               ></textarea>
             </div>
             
@@ -1142,7 +1142,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                 rows={5}
                 value={lessonForm.prompts}
                 onChange={handleLessonInputChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
               ></textarea>
             </div>
             
@@ -1150,7 +1150,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-gray-400"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
               >
                 {isLoading ? 'Saving...' : editingLessonId ? 'Update Lesson' : 'Add Lesson'}
               </button>
@@ -1180,7 +1180,7 @@ const AdminStudiesPage: React.FC<AdminStudiesPageProps> = () => {
                   .map(lesson => (
                     <div 
                       key={lesson.id} 
-                      className="border rounded-lg p-4 hover:border-primary-300 hover:bg-gray-50"
+                      className="border rounded-lg p-4 hover:border-blue-300 hover:bg-gray-50"
                     >
                       <div className="flex justify-between items-start mb-2">
                         <h4 className="text-lg font-medium text-gray-800">
