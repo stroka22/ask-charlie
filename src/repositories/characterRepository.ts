@@ -1,4 +1,5 @@
-import { supabase, Character } from '../services/supabase';
+import { supabase } from '../services/supabase';
+import type { Character } from '../services/supabase';
 import { getSafeAvatarUrl } from '../utils/imageUtils';
 
 /**

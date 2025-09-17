@@ -185,7 +185,7 @@ if (!ENV_URL || !ENV_ANON) {
  */
 export async function checkSupabaseConnection(): Promise<boolean> {
   try {
-    const { data, error } = await supabase.from('characters').select('count');
+    const { error } = await supabase.from('characters').select('count');
     return !error;
   } catch (error) {
     console.error('Supabase connection check failed:', error);
