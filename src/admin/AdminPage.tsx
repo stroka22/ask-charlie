@@ -80,6 +80,15 @@ export default function AdminPage() {
   const [formRelationships, setFormRelationships] = useState<string>(''); // Stored as stringified JSON
   const [formStudyQuestions, setFormStudyQuestions] = useState<string>('');
 
+  // Add admin-surface class to body on mount and remove on unmount
+  useEffect(() => {
+    document.body.classList.add('admin-surface');
+    
+    return () => {
+      document.body.classList.remove('admin-surface');
+    };
+  }, []);
+
   const resetForm = useCallback(() => {
     setEditingCharacterId(null);
     setFormName('');
@@ -303,7 +312,7 @@ export default function AdminPage() {
   return (
     <AuthGate>
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-blue-900 mb-6">Admin Panel - Assistant Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Admin Panel - Assistant Management</h1>
         <p className="text-gray-700 mb-4">
           Welcome! Manage your assistants and related data here.
         </p>
@@ -315,7 +324,7 @@ export default function AdminPage() {
               onClick={() => setActiveTab('characters')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'characters'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-primary-500 text-primary-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -325,7 +334,7 @@ export default function AdminPage() {
               onClick={() => setActiveTab('groups')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'groups'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-primary-500 text-primary-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -335,7 +344,7 @@ export default function AdminPage() {
         </div>
 
         {isLoading && (
-          <div className="mb-4 p-3 bg-blue-100 text-blue-700 rounded">
+          <div className="mb-4 p-3 bg-primary-100 text-primary-700 rounded">
             Loading...
           </div>
         )}
@@ -354,7 +363,7 @@ export default function AdminPage() {
         <>
         {/* Part A: CSV Upload Tool */}
         <section className="mb-8 p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold text-blue-800 mb-4">Bulk Upload Assistants (CSV)</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Bulk Upload Assistants (CSV)</h2>
           <p className="text-gray-600 mb-4">
             Upload a CSV file to add or update multiple assistants. Expected fields: character_name, avatar_url,
             feature_image_url, short_biography, opening_sentence, persona_prompt, description, is_visible (true/false).
@@ -366,13 +375,13 @@ export default function AdminPage() {
             accept=".csv"
             onChange={handleCSVUpload}
             disabled={isLoading}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
           />
         </section>
 
         {/* Part B: Manual Character Creation/Edit Form */}
         <section className="p-6 bg-white rounded-lg shadow-md mb-8">
-          <h2 className="text-2xl font-semibold text-blue-800 mb-4">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
             {editingCharacterId ? 'Edit Assistant' : 'Create New Assistant'}
           </h2>
           <form onSubmit={handleFormSubmit} className="space-y-4">
@@ -384,7 +393,7 @@ export default function AdminPage() {
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               />
             </div>
             <div>
@@ -394,7 +403,7 @@ export default function AdminPage() {
                 id="avatar_url"
                 value={formAvatarUrl}
                 onChange={(e) => setFormAvatarUrl(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               />
             </div>
             <div>
@@ -404,7 +413,7 @@ export default function AdminPage() {
                 id="feature_image_url"
                 value={formFeatureImageUrl}
                 onChange={(e) => setFormFeatureImageUrl(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               />
             </div>
             <div>
@@ -414,7 +423,7 @@ export default function AdminPage() {
                 rows={3}
                 value={formShortBiography}
                 onChange={(e) => setFormShortBiography(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               ></textarea>
             </div>
             <div>
@@ -425,7 +434,7 @@ export default function AdminPage() {
                 value={formDescription}
                 onChange={(e) => setFormDescription(e.target.value)}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               ></textarea>
             </div>
             <div>
@@ -435,7 +444,7 @@ export default function AdminPage() {
                 id="bible_book"
                 value={formBibleBook}
                 onChange={(e) => setFormBibleBook(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               />
             </div>
             <div>
@@ -445,7 +454,7 @@ export default function AdminPage() {
                 rows={2}
                 value={formOpeningSentence}
                 onChange={(e) => setFormOpeningSentence(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               ></textarea>
             </div>
             <div>
@@ -456,7 +465,7 @@ export default function AdminPage() {
                 value={formPersonaPrompt}
                 onChange={(e) => setFormPersonaPrompt(e.target.value)}
                 required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               ></textarea>
             </div>
             <div>
@@ -466,7 +475,7 @@ export default function AdminPage() {
                 rows={3}
                 value={formScripturalContext}
                 onChange={(e) => setFormScripturalContext(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               ></textarea>
             </div>
             {/* is_visible checkbox */}
@@ -476,7 +485,7 @@ export default function AdminPage() {
                 id="is_visible"
                 checked={formIsVisible}
                 onChange={(e) => setFormIsVisible(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
               />
               <label htmlFor="is_visible" className="ml-2 block text-sm font-medium text-gray-700">
                 Is Visible to Users
@@ -485,7 +494,7 @@ export default function AdminPage() {
 
             {/* Character Insights data */}
             <div className="mt-6 border-t border-gray-300 pt-6">
-              <h3 className="text-xl font-semibold text-blue-800 mb-4">Assistant Insights</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Assistant Insights</h3>
               
               <div className="space-y-4">
                 <div>
@@ -495,7 +504,7 @@ export default function AdminPage() {
                     id="timeline_period"
                     value={formTimelinePeriod}
                     onChange={(e) => setFormTimelinePeriod(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                   />
                 </div>
                 <div>
@@ -505,7 +514,7 @@ export default function AdminPage() {
                     rows={3}
                     value={formHistoricalContext}
                     onChange={(e) => setFormHistoricalContext(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                   ></textarea>
                 </div>
                 <div>
@@ -515,7 +524,7 @@ export default function AdminPage() {
                     id="geographic_location"
                     value={formGeographicLocation}
                     onChange={(e) => setFormGeographicLocation(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                   />
                 </div>
                 <div>
@@ -525,7 +534,7 @@ export default function AdminPage() {
                     rows={3}
                     value={formKeyScriptureRefs}
                     onChange={(e) => setFormKeyScriptureRefs(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                   ></textarea>
                 </div>
                 <div>
@@ -535,7 +544,7 @@ export default function AdminPage() {
                     rows={3}
                     value={formTheologicalSignificance}
                     onChange={(e) => setFormTheologicalSignificance(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                   ></textarea>
                 </div>
                 <div>
@@ -550,7 +559,7 @@ export default function AdminPage() {
                     rows={5}
                     value={formRelationships}
                     onChange={(e) => setFormRelationships(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                   ></textarea>
                 </div>
                 <div>
@@ -560,7 +569,7 @@ export default function AdminPage() {
                     rows={5}
                     value={formStudyQuestions}
                     onChange={(e) => setFormStudyQuestions(e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                   ></textarea>
                 </div>
               </div>
@@ -570,7 +579,7 @@ export default function AdminPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+                className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-gray-400"
               >
                 {isLoading ? 'Saving...' : editingCharacterId ? 'Update Assistant' : 'Create Assistant'}
               </button>
@@ -589,7 +598,7 @@ export default function AdminPage() {
 
         {/* Character List with Search */}
         <section className="p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-2xl font-semibold text-blue-800 mb-4">Existing Assistants</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Existing Assistants</h2>
           
           {/* Search input */}
           <div className="mb-6">
@@ -600,7 +609,7 @@ export default function AdminPage() {
               placeholder="Search by name, description, or reference..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
             />
           </div>
           
@@ -659,7 +668,7 @@ export default function AdminPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <button
                           onClick={() => handleEditCharacter(character)}
-                          className="text-blue-600 hover:text-blue-900 mr-4"
+                          className="text-primary-600 hover:text-primary-900 mr-4"
                         >
                           Edit
                         </button>
