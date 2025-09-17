@@ -33,7 +33,6 @@ if (hasEnvUrl && hasEnvAnon) {
   resolvedUrl = 'https://erhganndmqucihkygdxm.supabase.co';
   resolvedAnon =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyaGdhbm5kbXF1Y2loa3lnZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNzc2NTgsImV4cCI6MjA2NTY1MzY1OH0.PLACEHOLDER_TOKEN';
-  // eslint-disable-next-line no-console
   console.warn(
     '[supabase] Using bundled fallback credentials (dev/demo only). ' +
       'Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY for production.',
@@ -42,7 +41,6 @@ if (hasEnvUrl && hasEnvAnon) {
   // Partial config – hard fail loudly
   resolvedUrl = ENV_URL || 'MISSING_ENV_SUPABASE_URL';
   resolvedAnon = ENV_ANON || 'MISSING_ENV_SUPABASE_ANON_KEY';
-  // eslint-disable-next-line no-console
   console.error(
     '[supabase] Incomplete Supabase environment configuration. ' +
       'Both VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set. ' +
@@ -156,7 +154,6 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Warn developers when fallback credentials are being used
 if (!ENV_URL || !ENV_ANON) {
-  // eslint-disable-next-line no-console
   console.warn(
     '[supabase] Using fallback Supabase credentials. ' +
       'Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your env.',
