@@ -1109,6 +1109,57 @@ COMMENT ON TABLE ai_outlines IS 'AI-generated study outlines with RLS: admin/sup
 -- =================================================================
 -- Instructions for running this script
 -- =================================================================
+
+-- =================================================================
+-- 13. FAQs table + policies
+-- =================================================================
+
+-- Create FAQs table
+CREATE TABLE IF NOT EXISTS public.faqs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  question TEXT NOT NULL,
+  answer TEXT NOT NULL,
+  category TEXT,
+  is_published BOOLEAN NOT NULL DEFAULT TRUE,
+  order_index INTEGER,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Trigger to keep updated_at current
+DROP TRIGGER IF EXISTS update_faqs_updated_at ON public.faqs;
+CREATE TRIGGER update_faqs_updated_at
+BEFORE UPDATE ON public.faqs
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+-- Indexes for common queries
+CREATE INDEX IF NOT EXISTS faqs_published_order_idx
+  ON public.faqs (is_published, order_index, created_at);
+
+-- Enable RLS
+ALTER TABLE public.faqs ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies (idempotent)
+DROP POLICY IF EXISTS faqs_select_policy ON public.faqs;
+DROP POLICY IF EXISTS faqs_write_policy ON public.faqs;
+
+-- SELECT: Public read
+CREATE POLICY faqs_select_policy
+  ON public.faqs
+  FOR SELECT
+  USING (true);
+
+-- INSERT/UPDATE/DELETE: Admins & superadmins only
+CREATE POLICY faqs_write_policy
+  ON public.faqs
+  FOR ALL
+  USING (public.current_user_role() IN ('admin', 'superadmin'))
+  WITH CHECK (public.current_user_role() IN ('admin', 'superadmin'));
+
+-- Comment for documentation
+COMMENT ON TABLE public.faqs IS 'Frequently Asked Questions with public read; write restricted to admin/superadmin';
+
 /*
 To run this migration script:
 
