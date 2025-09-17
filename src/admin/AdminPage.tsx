@@ -4,6 +4,9 @@ import AuthGate from './AuthGate';
 import { characterRepository } from '../repositories/characterRepository';
 import { type Character } from '../services/supabase';
 import GroupManagement from '../components/admin/GroupManagement';
+import AdminFAQEditor from '../components/admin/AdminFAQEditor';
+import AccountTierManagement from '../components/admin/AccountTierManagement';
+import AdminStudiesPage from '../components/admin/AdminStudiesPage';
 
 // Helper function for basic CSV parsing
 const parseCSV = (csvText: string): Array<Record<string, string>> => {
@@ -55,7 +58,13 @@ export default function AdminPage() {
   /* ------------------------------------------------------------
    * Top-level Admin Tabs
    * ---------------------------------------------------------- */
-  type AdminMainTab = 'characters' | 'groups';
+  type AdminMainTab =
+    | 'characters'
+    | 'groups'
+    | 'faq'
+    | 'tiers'
+    | 'roundtable'
+    | 'studies';
   const [activeTab, setActiveTab] = useState<AdminMainTab>('characters');
 
   // Form state for manual creation/editing
@@ -80,14 +89,7 @@ export default function AdminPage() {
   const [formRelationships, setFormRelationships] = useState<string>(''); // Stored as stringified JSON
   const [formStudyQuestions, setFormStudyQuestions] = useState<string>('');
 
-  // Add admin-surface class to body on mount and remove on unmount
-  useEffect(() => {
-    document.body.classList.add('admin-surface');
-    
-    return () => {
-      document.body.classList.remove('admin-surface');
-    };
-  }, []);
+  // Removed legacy admin-surface body class injection (Bot360AI color scheme does not use it)
 
   const resetForm = useCallback(() => {
     setEditingCharacterId(null);
@@ -339,6 +341,46 @@ export default function AdminPage() {
               }`}
             >
               Groups
+            </button>
+            <button
+              onClick={() => setActiveTab('faq')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'faq'
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              FAQ
+            </button>
+            <button
+              onClick={() => setActiveTab('tiers')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'tiers'
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Tiers
+            </button>
+            <button
+              onClick={() => setActiveTab('roundtable')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'roundtable'
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Roundtable
+            </button>
+            <button
+              onClick={() => setActiveTab('studies')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'studies'
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Studies
             </button>
           </nav>
         </div>
@@ -691,6 +733,22 @@ export default function AdminPage() {
 
         {activeTab === 'groups' && (
           <GroupManagement />
+        )}
+
+        {activeTab === 'faq' && (
+          <AdminFAQEditor />
+        )}
+
+        {activeTab === 'tiers' && (
+          <AccountTierManagement mode="full" />
+        )}
+
+        {activeTab === 'roundtable' && (
+          <AccountTierManagement mode="roundtable-only" />
+        )}
+
+        {activeTab === 'studies' && (
+          <AdminStudiesPage embedded={true} />
         )}
       </div>
     </AuthGate>
