@@ -5,22 +5,10 @@ import { createClient } from '@supabase/supabase-js';
 // =========================================================================
 
 /* -----------------------------------------------------------------------
- * Environment helpers – prefer Vite env (import.meta.env.*) but also check
- * Node‐style process.env so the same file works in SSR / tests.
+ * Environment helpers – rely solely on Vite's import.meta.env
  * --------------------------------------------------------------------- */
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-const ENV_URL =
-  (import.meta as any).env?.VITE_SUPABASE_URL ??
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  (typeof process !== 'undefined' ? (process as any).env?.VITE_SUPABASE_URL : undefined);
-
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-const ENV_ANON =
-  (import.meta as any).env?.VITE_SUPABASE_ANON_KEY ??
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  (typeof process !== 'undefined' ? (process as any).env?.VITE_SUPABASE_ANON_KEY : undefined);
+const ENV_URL: string | undefined = import.meta?.env?.VITE_SUPABASE_URL;
+const ENV_ANON: string | undefined = import.meta?.env?.VITE_SUPABASE_ANON_KEY;
 
 // ---------------------------------------------------------------------------
 // Hardened env handling
@@ -45,7 +33,6 @@ if (hasEnvUrl && hasEnvAnon) {
   resolvedUrl = 'https://erhganndmqucihkygdxm.supabase.co';
   resolvedAnon =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyaGdhbm5kbXF1Y2loa3lnZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNzc2NTgsImV4cCI6MjA2NTY1MzY1OH0.PLACEHOLDER_TOKEN';
-  // eslint-disable-next-line no-console
   console.warn(
     '[supabase] Using bundled fallback credentials (dev/demo only). ' +
       'Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY for production.',
@@ -54,7 +41,6 @@ if (hasEnvUrl && hasEnvAnon) {
   // Partial config – hard fail loudly
   resolvedUrl = ENV_URL || 'MISSING_ENV_SUPABASE_URL';
   resolvedAnon = ENV_ANON || 'MISSING_ENV_SUPABASE_ANON_KEY';
-  // eslint-disable-next-line no-console
   console.error(
     '[supabase] Incomplete Supabase environment configuration. ' +
       'Both VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set. ' +
@@ -168,7 +154,6 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Warn developers when fallback credentials are being used
 if (!ENV_URL || !ENV_ANON) {
-  // eslint-disable-next-line no-console
   console.warn(
     '[supabase] Using fallback Supabase credentials. ' +
       'Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your env.',
