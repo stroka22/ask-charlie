@@ -112,6 +112,164 @@ export async function searchCharacters(
 }
 
 // ---------------------------------------------------------------------------
+// Compatibility helpers (Bot360AI api naming)
+// ---------------------------------------------------------------------------
+
+export const sanitizeCharacter = mapCharacter;
+export function sanitizeCharacters(chars: Character[]): Character[] {
+  return chars.map(sanitizeCharacter);
+}
+
+// ---------------------------------------------------------------------------
+// Bot360AI-style repository wrapper
+// ---------------------------------------------------------------------------
+
+export const characterRepository = {
+  sanitizeCharacter,
+  sanitizeCharacters,
+
+  async getAll(isAdmin: boolean = false): Promise<Character[]> {
+    let query = supabase.from('characters').select('*');
+    if (!isAdmin) {
+      // show visible or NULL (legacy) rows only
+      query = query.or('is_visible.is.null,is_visible.eq.true');
+    }
+    const { data, error } = await query.order('name');
+    if (error) {
+      console.error('Failed to fetch characters:', error);
+      throw new Error('Failed to fetch characters');
+    }
+    return sanitizeCharacters((data as Character[]) || []);
+  },
+
+  async getById(id: string): Promise<Character | null> {
+    const { data, error } = await supabase
+      .from('characters')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error) {
+      if (error.code === 'PGRST116') return null; // no rows
+      console.error(`Failed to fetch character ${id}:`, error);
+      throw new Error('Failed to fetch character');
+    }
+    return data ? sanitizeCharacter(data as Character) : null;
+  },
+
+  async getByName(name: string): Promise<Character | null> {
+    const { data, error } = await supabase
+      .from('characters')
+      .select('*')
+      .ilike('name', name)
+      .single();
+    if (error) {
+      if (error.code === 'PGRST116') return null;
+      console.error(`Failed to fetch character by name ${name}:`, error);
+      throw new Error('Failed to fetch character');
+    }
+    return data ? sanitizeCharacter(data as Character) : null;
+  },
+
+  async search(queryStr: string, isAdmin = false): Promise<Character[]> {
+    let query = supabase
+      .from('characters')
+      .select('*')
+      .ilike('name', `%${queryStr}%`);
+    if (!isAdmin) {
+      query = query.or('is_visible.is.null,is_visible.eq.true');
+    }
+    const { data, error } = await query.order('name');
+    if (error) {
+      console.error(`Failed to search characters '${queryStr}':`, error);
+      throw new Error('Failed to search characters');
+    }
+    return sanitizeCharacters((data as Character[]) || []);
+  },
+
+  async createCharacter(
+    character: Omit<Character, 'id' | 'created_at' | 'updated_at'>,
+  ): Promise<Character> {
+    const toInsert = {
+      ...character,
+      avatar_url: character.avatar_url
+        ? getSafeAvatarUrl(character.name, character.avatar_url)
+        : character.avatar_url,
+      feature_image_url: character.feature_image_url
+        ? getSafeAvatarUrl(character.name, character.feature_image_url)
+        : character.feature_image_url,
+    };
+    const { data, error } = await supabase
+      .from('characters')
+      .insert(toInsert)
+      .select('*')
+      .single();
+    if (error) {
+      console.error('Failed to create character:', error);
+      throw new Error('Failed to create character');
+    }
+    return sanitizeCharacter(data as Character);
+  },
+
+  async updateCharacter(
+    id: string,
+    updates: Partial<Omit<Character, 'id' | 'created_at' | 'updated_at'>>,
+  ): Promise<Character> {
+    const safeUpdates = { ...updates } as typeof updates;
+    if (updates.avatar_url && updates.name) {
+      safeUpdates.avatar_url = getSafeAvatarUrl(updates.name, updates.avatar_url);
+    }
+    if (updates.feature_image_url && updates.name) {
+      safeUpdates.feature_image_url = getSafeAvatarUrl(
+        updates.name,
+        updates.feature_image_url,
+      );
+    }
+    const { data, error } = await supabase
+      .from('characters')
+      .update({ ...safeUpdates, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select('*')
+      .single();
+    if (error) {
+      console.error(`Failed to update character ${id}:`, error);
+      throw new Error('Failed to update character');
+    }
+    return sanitizeCharacter(data as Character);
+  },
+
+  async deleteCharacter(id: string): Promise<void> {
+    const { error } = await supabase.from('characters').delete().eq('id', id);
+    if (error) {
+      console.error(`Failed to delete character ${id}:`, error);
+      throw new Error('Failed to delete character');
+    }
+  },
+
+  async bulkCreateCharacters(
+    chars: Omit<Character, 'id' | 'created_at' | 'updated_at'>[],
+  ): Promise<Character[]> {
+    if (chars.length === 0) return [];
+    const sanitized = chars.map((c) => ({
+      ...c,
+      avatar_url: c.avatar_url
+        ? getSafeAvatarUrl(c.name, c.avatar_url)
+        : c.avatar_url,
+      feature_image_url: c.feature_image_url
+        ? getSafeAvatarUrl(c.name, c.feature_image_url)
+        : c.feature_image_url,
+    }));
+    const { data, error } = await supabase
+      .from('characters')
+      .insert(sanitized)
+      .select('*');
+    if (error) {
+      console.error('Failed bulk insert:', error);
+      throw new Error('Failed to bulk create characters');
+    }
+    return sanitizeCharacters((data as Character[]) || []);
+  },
+};
+
 // Mutations
 // ---------------------------------------------------------------------------
 
