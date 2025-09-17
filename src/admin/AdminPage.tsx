@@ -9,6 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import AuthGate from './AuthGate';
 import PersonasTab from './tabs/PersonasTab';
+import CharactersTab from './tabs/CharactersTab';
 import FAQTab from './tabs/FAQTab';
 import StudiesTab from './tabs/StudiesTab';
 import RoundtableTab from './tabs/RoundtableTab';
@@ -19,6 +20,7 @@ import type { SidebarItem } from '../ui/Sidebar';
 import Card from '../ui/Card';
 
 const ITEMS: SidebarItem[] = [
+  { key: 'Characters', label: 'Characters', icon: <UsersIcon /> },
   { key: 'Personas', label: 'Personas', icon: <UsersIcon /> },
   { key: 'FAQ', label: 'FAQ', icon: <QuestionMarkCircleIcon /> },
   { key: 'Studies', label: 'Studies', icon: <AcademicCapIcon /> },
@@ -30,7 +32,7 @@ const ITEMS: SidebarItem[] = [
 type Tab = typeof ITEMS[number]['key'];
 
 export default function AdminPage() {
-  const [tab, setTab] = useState<Tab>('Personas');
+  const [tab, setTab] = useState<Tab>('Characters');
 
   return (
     <AuthGate>
@@ -49,6 +51,7 @@ export default function AdminPage() {
           <main className="flex-1 p-6 overflow-y-auto">
             <Card>
               {tab==='Personas' && <PersonasTab/>}
+              {tab==='Characters' && <CharactersTab/>}
               {tab==='FAQ' && <FAQTab/>}
               {tab==='Studies' && <StudiesTab/>}
               {tab==='Roundtable' && <RoundtableTab/>}

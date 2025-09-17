@@ -5,22 +5,10 @@ import { createClient } from '@supabase/supabase-js';
 // =========================================================================
 
 /* -----------------------------------------------------------------------
- * Environment helpers – prefer Vite env (import.meta.env.*) but also check
- * Node‐style process.env so the same file works in SSR / tests.
+ * Environment helpers – rely solely on Vite's import.meta.env
  * --------------------------------------------------------------------- */
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-const ENV_URL =
-  (import.meta as any).env?.VITE_SUPABASE_URL ??
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  (typeof process !== 'undefined' ? (process as any).env?.VITE_SUPABASE_URL : undefined);
-
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-const ENV_ANON =
-  (import.meta as any).env?.VITE_SUPABASE_ANON_KEY ??
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  (typeof process !== 'undefined' ? (process as any).env?.VITE_SUPABASE_ANON_KEY : undefined);
+const ENV_URL: string | undefined = import.meta?.env?.VITE_SUPABASE_URL;
+const ENV_ANON: string | undefined = import.meta?.env?.VITE_SUPABASE_ANON_KEY;
 
 // ---------------------------------------------------------------------------
 // Hardened env handling

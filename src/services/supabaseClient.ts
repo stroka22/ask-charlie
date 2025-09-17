@@ -4,26 +4,13 @@
  */
 
 // Types for null-safe client
-import type { Session } from '@supabase/supabase-js';
+import type { Session, SupabaseClient } from '@supabase/supabase-js';
 
 // Check if Supabase environment variables exist
 const hasSupabaseConfig = !!(
   import.meta.env.VITE_SUPABASE_URL && 
   import.meta.env.VITE_SUPABASE_ANON_KEY
 );
-
-// Type for our client (or null when not configured)
-type SupabaseClient = {
-  auth: {
-    signInWithOtp: (params: { email: string; options?: any }) => Promise<any>;
-    signOut: () => Promise<any>;
-    getSession: () => Promise<{ data: { session: Session | null } }>;
-    exchangeCodeForSession: (authCode: string) => Promise<any>;
-    onAuthStateChange: (
-      cb: (event: string, session: Session | null) => void,
-    ) => { data: { subscription: { unsubscribe: () => void } } };
-  }
-};
 
 // Lazy-loaded client instance
 let supabaseClient: SupabaseClient | null = null;
@@ -39,7 +26,7 @@ async function initClient(): Promise<SupabaseClient | null> {
     return createClient(
       import.meta.env.VITE_SUPABASE_URL,
       import.meta.env.VITE_SUPABASE_ANON_KEY
-    );
+    ) as SupabaseClient;
   } catch (error) {
     console.error('Failed to initialize Supabase client:', error);
     return null;
@@ -72,7 +59,7 @@ export async function signIn(email: string): Promise<{ success: boolean; error?:
     const { error } = await client.auth.signInWithOtp({
       email,
       // redirect back to /login so the app can finalise the session and route to /admin
-      options: { emailRedirectTo: `${window.location.origin}/login` } as any,
+      options: { emailRedirectTo: `${window.location.origin}/login` },
     });
     
     if (error) {

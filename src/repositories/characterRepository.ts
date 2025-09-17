@@ -110,3 +110,59 @@ export async function searchCharacters(
   
   return (data || []).map(mapCharacter);
 }
+
+// ---------------------------------------------------------------------------
+// Mutations
+// ---------------------------------------------------------------------------
+
+/**
+ * Input type for creating or updating a character.
+ * All fields are optional except `id` for updates.
+ *
+ * NOTE: created_at / updated_at are handled by Supabase triggers.
+ */
+export type CharacterInput = Partial<Omit<Character, 'created_at' | 'updated_at'>>;
+
+/**
+ * Creates a new character or updates an existing one (upsert).
+ * When `input.id` exists, Supabase will perform a conflict-aware update.
+ *
+ * @param input - Character fields to create/update
+ * @returns The newly saved character (mapped) or null on failure
+ */
+export async function upsertCharacter(
+  input: CharacterInput,
+): Promise<Character | null> {
+  const { data, error } = await supabase
+    .from('characters')
+    .upsert(input, { onConflict: 'id' })
+    .select('*')
+    .single();
+
+  if (error) {
+    console.error('Error upserting character:', error);
+    return null;
+  }
+
+  return data ? mapCharacter(data) : null;
+}
+
+/**
+ * Deletes a character by ID.
+ *
+ * @param id - Character ID to delete
+ * @returns true when deletion succeeds, false otherwise
+ */
+export async function deleteCharacter(id: string): Promise<boolean> {
+  const { error } = await supabase
+    .from('characters')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error(`Error deleting character ${id}:`, error);
+    return false;
+  }
+
+  return true;
+}
