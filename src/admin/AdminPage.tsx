@@ -313,7 +313,8 @@ export default function AdminPage() {
 
   return (
     <AuthGate>
-      <div className="container mx-auto px-4 py-8">
+      <div className="admin-surface min-h-screen">
+        <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Admin Panel - Assistant Management</h1>
         <p className="text-gray-700 mb-4">
           Welcome! Manage your assistants and related data here.
@@ -750,6 +751,7 @@ export default function AdminPage() {
         {activeTab === 'studies' && (
           <AdminStudiesPage embedded={true} />
         )}
+      </div>
       </div>
     </AuthGate>
   );
