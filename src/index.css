@@ -107,7 +107,7 @@ body {
   background-image:linear-gradient(90deg,#b91c1c,#ffffff,#1e3a8a);
 }
 
-.admin-surface{
+body.admin-surface, .admin-surface{
   /* Neutral light surface for admin UI */
   background-color:#f9fafb; /* gray-50 */
   color:#111827;           /* gray-900 */
