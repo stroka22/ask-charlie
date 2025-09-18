@@ -330,7 +330,7 @@ export default function AdminPage() {
     <AuthGate>
       <div className="admin-surface min-h-screen">
         <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Admin Panel - Assistant Management</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Admin Panel vA - Assistant Management</h1>
         <p className="text-gray-700 mb-4">
           Welcome! Manage your assistants and related data here.
         </p>
