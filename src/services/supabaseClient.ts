@@ -1,46 +1,22 @@
 /**
- * Optional Supabase client for frontend Auth
- * Only loads the Supabase library if environment variables are present
+ * Front-end helper utilities for Supabase Auth.
+ * These functions now reuse the singleton client created in `supabase.ts`
+ * so we don’t create multiple GoTrueClient instances (fixes console warning).
  */
 
-// Types for null-safe client
 import type { Session, SupabaseClient } from '@supabase/supabase-js';
-
-// Check if Supabase environment variables exist
-const hasSupabaseConfig = !!(
-  import.meta.env.VITE_SUPABASE_URL && 
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
-
-// Lazy-loaded client instance
-let supabaseClient: SupabaseClient | null = null;
-
-// Initialize the client if environment variables exist
-async function initClient(): Promise<SupabaseClient | null> {
-  if (!hasSupabaseConfig) return null;
-  
-  try {
-    // Dynamically import Supabase only if environment variables exist
-    const { createClient } = await import('@supabase/supabase-js');
-    
-    return createClient(
-      import.meta.env.VITE_SUPABASE_URL,
-      import.meta.env.VITE_SUPABASE_ANON_KEY
-    ) as SupabaseClient;
-  } catch (error) {
-    console.error('Failed to initialize Supabase client:', error);
-    return null;
-  }
-}
+import {
+  supabase,
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY,
+} from './supabase';
 
 /**
- * Get the Supabase client instance (or null if not configured)
+ * Returns the already-initialised Supabase client created in `supabase.ts`.
+ * Keeps the original nullable signature so callers do not break.
  */
 export async function getClient(): Promise<SupabaseClient | null> {
-  if (supabaseClient) return supabaseClient;
-  
-  supabaseClient = await initClient();
-  return supabaseClient;
+  return supabase ?? null;
 }
 
 /**
@@ -148,5 +124,12 @@ export async function exchangeCodeForSession(code: string): Promise<boolean> {
  * Check if Supabase Auth is available
  */
 export function isSupabaseAuthAvailable(): boolean {
-  return hasSupabaseConfig;
+  // Treat auth as available only when real env vars are provided (no placeholders)
+  const urlOk = typeof SUPABASE_URL === 'string' && SUPABASE_URL.includes('.supabase.co');
+  const keyOk =
+    typeof SUPABASE_ANON_KEY === 'string' &&
+    SUPABASE_ANON_KEY.length > 40 &&
+    !SUPABASE_ANON_KEY.includes('PLACEHOLDER_TOKEN') &&
+    !SUPABASE_ANON_KEY.startsWith('MISSING_ENV');
+  return urlOk && keyOk;
 }
