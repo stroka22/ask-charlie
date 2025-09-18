@@ -385,7 +385,7 @@ const AdminFAQEditor: React.FC = () => {
             id="question"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
             placeholder="Enter the frequently asked question"
           />
         </div>
@@ -399,7 +399,7 @@ const AdminFAQEditor: React.FC = () => {
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             rows={5}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
             placeholder="Enter the answer to the question"
           />
         </div>
@@ -414,7 +414,7 @@ const AdminFAQEditor: React.FC = () => {
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
               placeholder="General"
             />
           </div>
@@ -428,7 +428,7 @@ const AdminFAQEditor: React.FC = () => {
               id="orderIndex"
               value={orderIndex}
               onChange={(e) => setOrderIndex(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
               placeholder="Leave empty for default ordering"
             />
           </div>
@@ -438,7 +438,7 @@ const AdminFAQEditor: React.FC = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-gray-400"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
           >
             {isLoading ? 'Saving...' : editingId ? 'Update FAQ' : 'Add FAQ'}
           </button>

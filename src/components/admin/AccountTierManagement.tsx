@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { getSettings, setSettings, getOwnerSlug } from '../../services/tierSettingsService';
-import roundtableSettingsRepository, { 
-  DEFAULT_ROUNDTABLE_SETTINGS 
+import roundtableSettingsRepository, {
+  DEFAULT_ROUNDTABLE_SETTINGS,
 } from '../../repositories/roundtableSettingsRepository';
+import { characterRepository } from '../../repositories/characterRepository';
+import type { Character } from '../../services/supabase';
 
 interface AccountTierManagementProps {
   mode?: 'full' | 'roundtable-only';
@@ -14,9 +16,21 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Free tier settings
+  // Free-tier settings
   const [freeMessageLimit, setFreeMessageLimit] = useState<number>(5);
   const [freeCharacterLimit, setFreeCharacterLimit] = useState<number>(10);
+
+  /* ------------------------------------------------------------------ */
+  /*  Characters + featured assistant                                   */
+  /* ------------------------------------------------------------------ */
+  const [characters, setCharacters] = useState<Character[]>([]);
+
+  const [featuredId, setFeaturedId] = useState<string>('');
+  const [featuredSaving, setFeaturedSaving] = useState<boolean>(false);
+  const [featuredSaveMessage, setFeaturedSaveMessage] = useState<{
+    type: '' | 'success' | 'error';
+    text: string;
+  }>({ type: '', text: '' });
 
   // Roundtable settings
   const [repliesPerRound, setRepliesPerRound] = useState<number>(3);
@@ -44,10 +58,14 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
         const slug = getOwnerSlug();
         setOwnerSlug(slug);
         
-        // Load tier settings and roundtable settings in parallel
+        // Fetch characters first (needed for featured-assistant UI)
+        const fetchedCharacters = await characterRepository.getAll(true);
+        setCharacters(fetchedCharacters);
+
+        // Load tier + roundtable settings in parallel
         const [tierSettings, roundtableSettings] = await Promise.all([
           getSettings(slug),
-          roundtableSettingsRepository.getByOwnerSlug(slug)
+          roundtableSettingsRepository.getByOwnerSlug(slug),
         ]);
         
         // Update free tier state
@@ -74,6 +92,24 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
           setStrictRotation(defaults.strictRotation);
           setEnableAdvanceRound(defaults.enableAdvanceRound);
           setSaveByDefault(defaults.saveByDefault);
+        }
+
+        /* --------------------------------------------------------------
+         * Load featured assistant from localStorage
+         * ------------------------------------------------------------ */
+        try {
+          const raw = localStorage.getItem(`featuredCharacter:${slug}`);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (typeof parsed === 'object' && parsed !== null && parsed.id) {
+              setFeaturedId(parsed.id as string);
+            } else if (typeof raw === 'string') {
+              // fallback old string format
+              setFeaturedId(raw);
+            }
+          }
+        } catch {
+          /* ignore */
         }
       } catch (err) {
         console.error('Error loading settings:', err);
@@ -157,6 +193,36 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
     }
   };
 
+  /** ------------------------------------------------------------------
+   * Featured assistant helpers
+   * ---------------------------------------------------------------- */
+  const saveFeaturedCharacter = () => {
+    setFeaturedSaving(true);
+    try {
+      if (!featuredId) {
+        localStorage.removeItem(`featuredCharacter:${ownerSlug}`);
+        setFeaturedSaveMessage({ type: 'success', text: 'Featured assistant removed' });
+      } else {
+        const char = characters.find((c) => c.id === featuredId);
+        if (!char) {
+          setFeaturedSaveMessage({ type: 'error', text: 'Assistant not found' });
+        } else {
+          const json = JSON.stringify({ id: char.id, name: char.name });
+          localStorage.setItem(`featuredCharacter:${ownerSlug}`, json);
+          setFeaturedSaveMessage({
+            type: 'success',
+            text: `${char.name} set as featured assistant`,
+          });
+        }
+      }
+    } catch {
+      setFeaturedSaveMessage({ type: 'error', text: 'Failed to save featured assistant' });
+    } finally {
+      setFeaturedSaving(false);
+      setTimeout(() => setFeaturedSaveMessage({ type: '', text: '' }), 3000);
+    }
+  };
+
   // Helper to constrain a number within limits
   const constrainValue = (value: number, min: number, max: number): number => {
     return Math.min(Math.max(value, min), max);
@@ -166,7 +232,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
     <div className="space-y-6">
       {/* Status Messages */}
       {isLoading && (
-        <div className="p-3 bg-primary-100 text-primary-700 rounded">
+        <div className="p-3 bg-blue-100 text-blue-700 rounded">
           Loading settings...
         </div>
       )}
@@ -186,7 +252,63 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
       {/* Free Tier Settings (only shown in 'full' mode) */}
       {mode === 'full' && (
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Free Tier Settings</h2>
+          {/* ───────────────────────── Featured assistant ───────────────────────── */}
+          <h2 className="text-2xl font-bold text-blue-900 mb-6">Tier & Featured</h2>
+
+          <div className="mb-10">
+            <h3 className="text-xl font-semibold text-blue-800 mb-4">Featured Assistant</h3>
+            <div className="flex flex-col md:flex-row md:items-end gap-4">
+              <div className="flex-grow">
+                <label
+                  htmlFor="featuredCharacter"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Featured Assistant
+                </label>
+                <select
+                  id="featuredCharacter"
+                  value={featuredId}
+                  onChange={(e) => setFeaturedId(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">None - No featured assistant</option>
+                  {characters.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center space-x-4">
+                {featuredSaveMessage.text && (
+                  <div
+                    className={`text-sm ${
+                      featuredSaveMessage.type === 'success'
+                        ? 'text-green-600'
+                        : 'text-red-600'
+                    }`}
+                  >
+                    {featuredSaveMessage.text}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={saveFeaturedCharacter}
+                  disabled={featuredSaving}
+                  className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${
+                    featuredSaving
+                      ? 'bg-blue-300 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                  }`}
+                >
+                  {featuredSaving ? 'Saving…' : 'Save Featured Assistant'}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* ───────────────────────── Free tier limits ───────────────────────── */}
+          <h3 className="text-xl font-semibold text-blue-800 mb-4">Free Account Limits</h3>
           <p className="text-gray-600 mb-6">
             Configure limits for users on the free tier.
           </p>
@@ -202,7 +324,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
                 value={freeMessageLimit}
                 onChange={(e) => setFreeMessageLimit(Math.max(1, parseInt(e.target.value) || 0))}
                 min="1"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               <p className="mt-1 text-sm text-gray-500">
                 Number of messages free users can send before hitting paywall.
@@ -219,7 +341,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
                 value={freeCharacterLimit}
                 onChange={(e) => setFreeCharacterLimit(Math.max(1, parseInt(e.target.value) || 0))}
                 min="1"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               <p className="mt-1 text-sm text-gray-500">
                 Number of characters free users can access.
@@ -230,7 +352,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
               <button
                 onClick={handleSaveFreeTier}
                 disabled={isLoading}
-                className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-gray-400"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
               >
                 {isLoading ? 'Saving...' : 'Save Free Tier Settings'}
               </button>
@@ -265,7 +387,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
                 }}
                 min={limits.free.repliesPerRound.min}
                 max={limits.free.repliesPerRound.max}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               <p className="mt-1 text-sm text-gray-500">
                 Range: {limits.free.repliesPerRound.min} - {limits.free.repliesPerRound.max}
@@ -288,7 +410,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
                 }}
                 min={limits.free.followUpsPerRound.min}
                 max={limits.free.followUpsPerRound.max}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               <p className="mt-1 text-sm text-gray-500">
                 Range: {limits.free.followUpsPerRound.min} - {limits.free.followUpsPerRound.max}
@@ -311,7 +433,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
                 }}
                 min={limits.free.maxWordsPerReply.min}
                 max={limits.free.maxWordsPerReply.max}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               <p className="mt-1 text-sm text-gray-500">
                 Range: {limits.free.maxWordsPerReply.min} - {limits.free.maxWordsPerReply.max}
@@ -335,7 +457,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
                 min={limits.free.creativity.min}
                 max={limits.free.creativity.max}
                 step="0.1"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               <p className="mt-1 text-sm text-gray-500">
                 Range: {limits.free.creativity.min} - {limits.free.creativity.max}
@@ -356,7 +478,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
                 }}
                 min="2"
                 max={limits.free.maxParticipants}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
               <p className="mt-1 text-sm text-gray-500">
                 Maximum: {limits.free.maxParticipants}
@@ -375,7 +497,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
                 checked={allowAllSpeak}
                 onChange={(e) => setAllowAllSpeak(e.target.checked)}
                 disabled={locks.allowAllSpeak}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <label htmlFor="allowAllSpeak" className="ml-2 block text-sm font-medium text-gray-700">
                 Allow All Speak (everyone can talk at once)
@@ -389,7 +511,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
                 checked={strictRotation}
                 onChange={(e) => setStrictRotation(e.target.checked)}
                 disabled={locks.strictRotation}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <label htmlFor="strictRotation" className="ml-2 block text-sm font-medium text-gray-700">
                 Strict Rotation (enforce turn order)
@@ -403,7 +525,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
                 checked={enableAdvanceRound}
                 onChange={(e) => setEnableAdvanceRound(e.target.checked)}
                 disabled={locks.enableAdvanceRound}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <label htmlFor="enableAdvanceRound" className="ml-2 block text-sm font-medium text-gray-700">
                 Enable Advance Round Button
@@ -417,7 +539,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
                 checked={saveByDefault}
                 onChange={(e) => setSaveByDefault(e.target.checked)}
                 disabled={locks.saveByDefault}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <label htmlFor="saveByDefault" className="ml-2 block text-sm font-medium text-gray-700">
                 Save Roundtables by Default
@@ -429,7 +551,7 @@ const AccountTierManagement: React.FC<AccountTierManagementProps> = ({ mode = 'f
             <button
               onClick={handleSaveRoundtable}
               disabled={isLoading}
-              className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-gray-400"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
             >
               {isLoading ? 'Saving...' : 'Save Roundtable Settings'}
             </button>
