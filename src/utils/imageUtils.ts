@@ -1,6 +1,6 @@
 /**
  * Image utility functions for handling avatars and other images
- * in the Ask Charlie application.
+ * in the Bot360AI application.
  */
 
 /**

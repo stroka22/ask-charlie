@@ -1,14 +1,26 @@
 import { createClient } from '@supabase/supabase-js';
 
 // =========================================================================
-// Environment Configuration with Hardened Fallbacks
+// IMPORTANT: Update these values with your Supabase project information
 // =========================================================================
 
 /* -----------------------------------------------------------------------
- * Environment helpers – rely solely on Vite's import.meta.env
+ * Environment helpers – prefer Vite env (import.meta.env.*) but also check
+ * Node‐style process.env so the same file works in SSR / tests.
  * --------------------------------------------------------------------- */
-const ENV_URL: string | undefined = import.meta?.env?.VITE_SUPABASE_URL;
-const ENV_ANON: string | undefined = import.meta?.env?.VITE_SUPABASE_ANON_KEY;
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+const ENV_URL =
+  (import.meta as any).env?.VITE_SUPABASE_URL ??
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  (typeof process !== 'undefined' ? (process as any).env?.VITE_SUPABASE_URL : undefined);
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+const ENV_ANON =
+  (import.meta as any).env?.VITE_SUPABASE_ANON_KEY ??
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  (typeof process !== 'undefined' ? (process as any).env?.VITE_SUPABASE_ANON_KEY : undefined);
 
 // ---------------------------------------------------------------------------
 // Hardened env handling
@@ -30,9 +42,10 @@ if (hasEnvUrl && hasEnvAnon) {
   resolvedAnon = ENV_ANON as string;
 } else if (!hasEnvUrl && !hasEnvAnon) {
   // Dev fallback
-  resolvedUrl = 'https://erhganndmqucihkygdxm.supabase.co';
+  resolvedUrl = 'https://sihfbzltlhkerkxozadt.supabase.co';
   resolvedAnon =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyaGdhbm5kbXF1Y2loa3lnZHhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNzc2NTgsImV4cCI6MjA2NTY1MzY1OH0.PLACEHOLDER_TOKEN';
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpaGZiemx0bGhrZXJreG96YWR0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAwNzc2NTgsImV4cCI6MjA2NTY1MzY1OH0.5H3eQxQxSfHZnpScO9bGHrSXA3GVuorLgpcTCEIomX4';
+  // eslint-disable-next-line no-console
   console.warn(
     '[supabase] Using bundled fallback credentials (dev/demo only). ' +
       'Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY for production.',
@@ -41,6 +54,7 @@ if (hasEnvUrl && hasEnvAnon) {
   // Partial config – hard fail loudly
   resolvedUrl = ENV_URL || 'MISSING_ENV_SUPABASE_URL';
   resolvedAnon = ENV_ANON || 'MISSING_ENV_SUPABASE_ANON_KEY';
+  // eslint-disable-next-line no-console
   console.error(
     '[supabase] Incomplete Supabase environment configuration. ' +
       'Both VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set. ' +
@@ -60,18 +74,18 @@ export interface Character {
   id: string;
   name: string;
   description?: string;
-  persona_prompt?: string;
-  opening_line?: string;
+  persona?: string;
+  greeting?: string;
   avatar_url?: string;
   feature_image_url?: string;
-  is_visible?: boolean;
-  short_biography?: string;
+  status?: string;
   bible_book?: string;
-  scriptural_context?: string;
+  category?: string;
+  key_scripture_references?: string;
+  is_visible?: boolean;
   timeline_period?: string;
   historical_context?: string;
   geographic_location?: string;
-  key_scripture_references?: string;
   theological_significance?: string;
   relationships?: Record<string, string[]>;
   study_questions?: string;
@@ -85,7 +99,6 @@ export interface Conversation {
   user_id: string;
   character_id: string;
   title: string;
-  is_favorite: boolean;
   created_at: string;
   updated_at: string;
   character?: Character;
@@ -94,8 +107,8 @@ export interface Conversation {
 // Chat message type definition
 export interface ChatMessage {
   id: string;
-  chat_id: string;
-  role: 'user' | 'assistant' | 'system';
+  conversation_id: string;
+  role: 'user' | 'assistant';
   content: string;
   created_at: string;
 }
@@ -106,43 +119,9 @@ export interface Profile {
   email?: string;
   display_name?: string;
   avatar_url?: string;
-  role?: 'user' | 'pastor' | 'admin' | 'superadmin';
-  owner_slug?: string;
+  role?: 'user' | 'pastor' | 'admin';
   created_at?: string;
   updated_at?: string;
-}
-
-// Character group type definition
-export interface CharacterGroup {
-  id: string;
-  name: string;
-  description?: string;
-  image_url?: string;
-  icon?: string;
-  sort_order: number;
-  created_at?: string;
-  updated_at?: string;
-}
-
-// Character group mapping type definition
-export interface CharacterGroupMapping {
-  id: string;
-  group_id: string;
-  character_id: string;
-  sort_order: number;
-  created_at?: string;
-  updated_at?: string;
-}
-
-// Tier settings type definition
-export interface TierSettings {
-  owner_slug: string;
-  free_message_limit: number;
-  free_character_limit: number;
-  free_characters: string[];
-  free_character_names: string[];
-  updated_at?: string;
-  created_at?: string;
 }
 
 // =========================================================================
@@ -154,6 +133,7 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Warn developers when fallback credentials are being used
 if (!ENV_URL || !ENV_ANON) {
+  // eslint-disable-next-line no-console
   console.warn(
     '[supabase] Using fallback Supabase credentials. ' +
       'Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your env.',
@@ -170,7 +150,7 @@ if (!ENV_URL || !ENV_ANON) {
  */
 export async function checkSupabaseConnection(): Promise<boolean> {
   try {
-    const { error } = await supabase.from('characters').select('count');
+    const { data, error } = await supabase.from('characters').select('count');
     return !error;
   } catch (error) {
     console.error('Supabase connection check failed:', error);

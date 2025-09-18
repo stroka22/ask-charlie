@@ -1,189 +1,305 @@
-import { useCallback } from 'react'
-import './index.css'
-import { ChatProvider, useChat } from './contexts/ChatContext'
-import CHARLIE from './data/personas/charlieKirk'
-import ChatInterface from './components/chat/ChatInterface'
-import {
-  Routes,
-  Route,
-  Link,
-  useNavigate,
-  useLocation,
-} from 'react-router-dom'
-import {
-  ScaleIcon,
-  LightBulbIcon,
-  GlobeAmericasIcon,
-} from '@heroicons/react/24/outline'
-import Button from './ui/Button'
-import AdminPage from './admin/AdminPage'
-import LoginPage from './admin/LoginPage'
-import clsx from 'clsx'
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation, Outlet } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+// Use the unified ChatContext implementation so *all* components
+// (including any legacy ones still importing from `../contexts/ChatContext`)
+// receive the same provider instance.
+import { ChatProvider } from './contexts/ChatContext.jsx';
+import { ConversationProvider } from './contexts/ConversationContext.jsx';
+import { RoundtableProvider } from './contexts/RoundtableContext.jsx';
+/* ------------------------------------------------------------------
+ * Global styles
+ * ------------------------------------------------------------------ */
+import './styles/tooltips.css'; // Custom tooltip system
+import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import PricingPage from './pages/PricingPage';
+import AdminPage from './pages/AdminPage';
+import ConversationsPage from './pages/ConversationsPage.jsx';
+import FavoritesPage from './pages/FavoritesPage.jsx';
+import MyWalkPage from './pages/MyWalkPage.jsx';
+import FAQPage from './pages/FAQPage.jsx';
+import ProfilePage from './pages/ProfilePage.jsx';
+import SettingsPage from './pages/SettingsPage.jsx';
+import ContactPage from './pages/ContactPage.jsx';
+import HowItWorksPage from './pages/HowItWorksPage.jsx';
+import AboutPage from './pages/AboutPage.jsx';
+import TermsPage from './pages/TermsPage.jsx';
+import PrivacyPage from './pages/PrivacyPage.jsx';
+import CookiePolicyPage from './pages/CookiePolicyPage.jsx';
+import PressKitPage from './pages/PressKitPage.jsx';
+import CareersPage from './pages/CareersPage.jsx';
+import PastorsPage from './pages/PastorsPage.jsx';
+import SalesPage from './pages/SalesPage.jsx';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import AdminInvitesPage from './pages/admin/AdminInvitesPage.jsx';
+import SuperadminUsersPage from './pages/admin/SuperadminUsersPage.jsx';
+import AdminStudiesPage from './pages/admin/AdminStudiesPage.jsx';
+import StudiesPage from './pages/StudiesPage.jsx';
+import StudyDetails from './pages/StudyDetails.jsx';
+import StudyLesson from './pages/StudyLesson.jsx';
+import RoundtableSetup from './pages/RoundtableSetup.jsx';
+import RoundtableChat from './pages/RoundtableChat.jsx';
+import SimpleChatWithHistory from './components/chat/SimpleChatWithHistory';
+import DebugPanel from './components/DebugPanel';
+import Header from './components/Header';
+import LeadCaptureBanner from './components/LeadCaptureBanner';
+import LeadCaptureModal from './components/LeadCaptureModal';
 
-// Main app content with access to chat context
-function Hero() {
-  const { selectPersona } = useChat()
-  const navigate = useNavigate()
-
-  const handleStartDebate = useCallback(() => {
-    selectPersona(CHARLIE)
-    navigate('/chat')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }, [selectPersona, navigate])
-
+// ---------------------------------------------------------------------------
+// Helper Component
+// ---------------------------------------------------------------------------
+// Renders the mobile LeadCaptureBanner only when NOT on an /admin route.
+function MobileLeadBannerGate(): JSX.Element | null {
+  const location = useLocation();
+  const isAdminPath = location.pathname.startsWith('/admin');
+  if (isAdminPath) return null;
   return (
-    <div className="container mx-auto px-4 py-12 md:py-20">
-      <div className="max-w-3xl mx-auto text-center navy-panel p-8 relative z-10 rounded-2xl">
-        {/* accent stripe */}
-        <div className="accent-tricolor w-20 h-1 mx-auto mb-6 rounded-full" />
-
-        <h1 className="faith-heading text-5xl md:text-6xl font-extrabold mb-6">
-          Debate&nbsp;Charlie&nbsp;Kirk
-        </h1>
-
-        <p className="text-lg md:text-xl text-white/80 mb-10 leading-relaxed">
-          Test your worldview against Charlie's conservative arguments or switch to
-          Lecture&nbsp;mode for guided explanations on faith, freedom, and America.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button onClick={handleStartDebate} size="lg">
-            Start the Debate
-          </Button>
-          <Link to="/admin">
-            <Button variant="secondary" size="lg">
-              Explore Admin
-            </Button>
-          </Link>
-        </div>
-
-        {/* Feature cards */}
-        <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Card 1 */}
-          <div className="navy-panel rounded-xl p-4 flex flex-col items-center text-center">
-            <ScaleIcon className="w-7 h-7 text-brand-gold mb-2" />
-            <h3 className="font-semibold mb-1">Challenge Ideas</h3>
-            <p className="text-sm text-white/70">
-              Engage in spirited debate and stress-test your worldview.
-            </p>
-          </div>
-          {/* Card 2 */}
-          <div className="navy-panel rounded-xl p-4 flex flex-col items-center text-center">
-            <LightBulbIcon className="w-7 h-7 text-brand-gold mb-2" />
-            <h3 className="font-semibold mb-1">Lecture Mode</h3>
-            <p className="text-sm text-white/70">
-              Switch gears for structured explanations and key takeaways.
-            </p>
-          </div>
-          {/* Card 3 */}
-          <div className="navy-panel rounded-xl p-4 flex flex-col items-center text-center">
-            <GlobeAmericasIcon className="w-7 h-7 text-brand-gold mb-2" />
-            <h3 className="font-semibold mb-1">Patriotic &amp; Faith-First</h3>
-            <p className="text-sm text-white/70">
-              Experience a platform rooted in freedom, family, and faith.
-            </p>
-          </div>
-        </div>
-
-        <div className="mt-12 p-4 bg-navy-800/50 border border-white/10 rounded-lg">
-          <p className="text-sm text-white/70 italic">
-            &quot;The strength of our nation comes from our faith, our families,
-            and our freedom. Let&apos;s discuss what matters most.&quot; —
-            Charlie Kirk
-          </p>
-        </div>
-      </div>
+    <div className="md:hidden">
+      <LeadCaptureBanner />
     </div>
-  )
+  );
 }
 
-function ChatPage() {
-  const { persona } = useChat()
-  const navigate = useNavigate()
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
 
-  if (!persona) {
-    // If no persona selected, redirect to home
-    navigate('/')
-    return null
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+  errorInfo: React.ErrorInfo | null;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <ChatInterface />
-      <button
-        onClick={() => navigate('/')}
-        className="mt-4 text-sm text-brand-gold hover:underline"
-      >
-        ← Back to Home
-      </button>
-    </div>
-  )
-}
+  static getDerivedStateFromError(error: Error): { hasError: boolean } {
+    // Update state so the next render shows the fallback UI.
+    return { hasError: true };
+  }
 
-function AppContent() {
-  /* No local chat hooks needed here; Hero and ChatPage handle persona logic */
-  const location = useLocation()
-  const isAdminRoute = location.pathname.startsWith('/admin')
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    // You can also log the error to an error reporting service
+    console.error('[ErrorBoundary] Rendering error:', error);
+    console.error('[ErrorBoundary] Error info:', errorInfo);
+    console.error('[ErrorBoundary] Error stack:', error.stack);
+    console.error('[ErrorBoundary] Component stack:', errorInfo.componentStack);
 
-  return (
-    <div className={clsx('min-h-screen flex flex-col', isAdminRoute ? 'admin-surface' : 'bg-navy-gradient')}>
-      {/* Header with patriotic styling */}
-      <header className={clsx('sticky top-0 z-50 backdrop-blur-sm shadow-md', isAdminRoute ? 'bg-white border-b border-gray-200' : 'bg-navy-900/95 border-b border-brand-blue/30')}>
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-          {/* Ask Charlie wordmark */}
-          <div className="flex-shrink-0">
-            <Link to="/" className={clsx('font-extrabold text-xl tracking-tight', isAdminRoute ? 'text-gray-900' : 'text-white')}>
-              Ask<span className="text-brand-red">Charlie</span>
-            </Link>
+    this.setState({
+      error,
+      errorInfo,
+    });
+  }
+
+  render(): React.ReactNode {
+    if (this.state.hasError) {
+      return (
+        <div
+          className="flex items-center justify-center min-h-screen bg-blue-900 text-white p-4"
+        >
+          <div
+            className="text-center space-y-4 max-w-2xl"
+          >
+            <h1 className="text-2xl font-bold">Something went wrong.</h1>
+            <p>Please refresh the page to try again.</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-cyan-400 text-indigo-900 font-semibold px-4 py-2 rounded-lg"
+            >
+              Reload
+            </button>
+            {process.env.NODE_ENV === 'development' &&
+              this.state.error && (
+                <details
+                  className="mt-4 text-left"
+                >
+                  <summary
+                    className="cursor-pointer text-cyan-400"
+                  >
+                    Debug Info (Development)
+                  </summary>
+                  <pre
+                    className="mt-2 p-2 bg-black/50 rounded text-xs overflow-auto max-h-40"
+                  >
+                    {`${this.state.error.toString()}\n\n${this.state.errorInfo?.componentStack}`}
+                  </pre>
+                </details>
+              )}
           </div>
-          
-          {/* Simple nav */}
-          <nav className="flex items-center space-x-6">
-            <Link to="/" className={clsx('text-sm font-medium transition-colors', isAdminRoute ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-brand-gold')}>
-              Home
-            </Link>
-            <Link to="/admin" className={clsx('text-sm font-medium transition-colors', isAdminRoute ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-brand-gold')}>
-              Admin
-            </Link>
-          </nav>
         </div>
-        
-        {/* Patriotic stripe */}
-        {!isAdminRoute && (
-          <div className="h-1 w-full bg-gradient-to-r from-brand-red via-white to-brand-blue"></div>
-        )}
-      </header>
+      );
+    }
 
-      <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<Hero />} />
-          <Route path="/chat" element={<ChatPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/login" element={<LoginPage />} />
-        </Routes>
-      </main>
-      
-      {/* Footer with patriotic accent */}
-      <footer className={clsx(isAdminRoute ? 'bg-white border-t border-gray-200' : 'bg-navy-800 border-t border-brand-red/30', 'py-4')}>
-        <div className="container mx-auto px-4 text-center">
-          <p className={clsx('text-sm', isAdminRoute ? 'text-gray-600' : 'text-white/60')}>
-            Ask Charlie © {new Date().getFullYear()} • 
-            <span className="mx-2 text-brand-red">♦</span>
-            Faith • Freedom • America
-          </p>
-        </div>
-      </footer>
-    </div>
-  )
+    return this.props.children;
+  }
 }
 
-// Wrap with provider
-function App() {
-  return (
-    <ChatProvider>
-      <AppContent />
-    </ChatProvider>
-  )
+// Protected Route component that checks authentication
+const ProtectedRoute = ({ redirectPath = '/login' }: { redirectPath?: string }): JSX.Element => {
+  const { user, loading } = useAuth();
+  const location = useLocation();
+  
+  // If still loading auth state, show a loading indicator
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen bg-blue-900 text-white"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400 mx-auto mb-4"></div><p>Loading...</p></div></div>;
+  }
+  
+  // If not authenticated, redirect to login with return path
+  if (!user) {
+    return <Navigate to={redirectPath} state={{ from: location }} replace={true} />;
+  }
+  
+  // If authenticated, render the child routes
+  return <Outlet />;
+};
+
+// Admin Route component that checks both authentication and admin role
+const AdminRoute = ({ redirectPath = '/' }: { redirectPath?: string }): JSX.Element => {
+  const { user, loading, isAdmin, role, refreshProfile } = useAuth();
+
+  // Proactively refresh profile if role is still unknown after login
+  useEffect(() => {
+    if (user && role === 'unknown') {
+      refreshProfile();
+    }
+  }, [user, role, refreshProfile]);
+  const location = useLocation();
+
+  if (loading) {
+    return <div className="flex items-center justify-center min-h-screen bg-blue-900 text-white"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400 mx-auto mb-4"></div><p>Loading...</p></div></div>;
+  }
+
+  if (!user) {
+    return <Navigate to={redirectPath} state={{ from: location }} replace={true} />;
+  }
+  
+  if (role === 'unknown') {
+    return <div className="flex items-center justify-center min-h-screen bg-blue-900 text-white"><div className="text-center"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-cyan-400 mx-auto mb-4"></div><p>Loading...</p></div></div>;
+  }
+
+  if (!isAdmin()) {
+    return <Navigate to={redirectPath} state={{ from: location }} replace={true} />;
+  }
+
+  return <Outlet />;
+};
+
+function App(): JSX.Element {
+  const params = new URLSearchParams(window.location.search);
+  // Only enable the "direct render" shortcut while _developing_ and
+  // when the URL explicitly asks for it.  Prevents production from
+  // forcing everything to HomePage and breaking custom routes like
+  // "/pastors".
+  const DIRECT_RENDER =
+    import.meta.env.DEV && params.get('direct') === '1';
+  console.log(`[App] init – DIRECT_RENDER=${DIRECT_RENDER}`);
+
+  /* ------------------------------------------------------------------
+   * Providers
+   * Always wrap the application in AuthProvider so that useAuth()
+   * is safe everywhere, even when we want to "skip" auth-related
+   * screens/guards in development.  Any "skip" logic should be handled
+   * inside consumer components rather than removing the context.
+   * ------------------------------------------------------------------ */
+  // Correct provider hierarchy:
+  // 1. AuthProvider         – provides authentication state
+  // 2. ConversationProvider – conversation persistence (used by chat)
+  // 3. ChatProvider         – chat logic (depends on conversation context)
+  const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <AuthProvider>
+      <ConversationProvider>
+        <ChatProvider>
+          <RoundtableProvider>{children}</RoundtableProvider>
+        </ChatProvider>
+      </ConversationProvider>
+    </AuthProvider>
+  );
+
+  if (DIRECT_RENDER) {
+    return (
+      <ErrorBoundary>
+        <Providers>
+          <>
+            <div className="flex flex-col min-h-screen bg-gradient-to-b from-blue-900 via-blue-700 to-blue-600">
+              <Header />
+              {/* Mobile-only banner */}
+              <MobileLeadBannerGate />
+              {/* Desktop modal (self-managed triggers) */}
+              <LeadCaptureModal />
+              <main className="flex-1">
+                <HomePage />
+              </main>
+            </div>
+            <DebugPanel />
+          </>
+        </Providers>
+      </ErrorBoundary>
+    );
+  }
+
+  return (<ErrorBoundary><Providers><>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      {/* Mobile-only banner */}
+      <MobileLeadBannerGate />
+      {/* Desktop modal (self-managed triggers) */}
+      <LeadCaptureModal />
+      <main className="flex-1 px-4 md:px-6"><Routes>
+    {/* Public routes */}
+    <Route path="/" element={<HomePage />} />
+    <Route path="/login" element={<LoginPage />} />
+    <Route path="/signup" element={<SignupPage />} />
+    <Route path="/reset-password" element={<ResetPasswordPage />} />
+    <Route path="/pricing" element={<PricingPage />} />
+    <Route path="/how-it-works" element={<HowItWorksPage />} />
+    <Route path="/about" element={<AboutPage />} />
+    <Route path="/contact" element={<ContactPage />} />
+    <Route path="/pastors" element={<PastorsPage />} />
+    <Route path="/sales" element={<SalesPage />} />
+    <Route path="/terms" element={<TermsPage />} />
+    <Route path="/privacy" element={<PrivacyPage />} />
+    <Route path="/cookies" element={<CookiePolicyPage />} />
+    <Route path="/press-kit" element={<PressKitPage />} />
+    {/* -------- Roundtable (public) ----------------------------- */}
+    <Route path="/roundtable/setup" element={<RoundtableSetup />} />
+    <Route path="/roundtable" element={<RoundtableChat />} />
+    <Route path="/careers" element={<CareersPage />} />
+    <Route path="/faq" element={<FAQPage />} />
+    {/* -------- Bible Studies (public) ------------------------- */}
+    <Route path="/studies" element={<StudiesPage />} />
+    <Route path="/studies/:id" element={<StudyDetails />} />
+    <Route path="/studies/:id/lesson/:lessonIndex" element={<StudyLesson />} />
+    <Route path="/debug" element={<div className="min-h-screen bg-slate-800 text-white p-4"><h1 className="text-2xl mb-4">Debug Tools</h1><DebugPanel /></div>} />
+    
+    {/* Chat & Shared conversation routes (public access) */}
+    <Route path="/chat" element={<SimpleChatWithHistory />} />
+    <Route path="/chat/:conversationId" element={<SimpleChatWithHistory />} />
+    <Route path="/shared/:shareCode" element={<SimpleChatWithHistory isSharedView={true} />} />
+
+    {/* Protected routes */}
+    <Route element={<ProtectedRoute redirectPath="/login" />}>
+      <Route element={<AdminRoute redirectPath="/login" />}>
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/invites" element={<AdminInvitesPage />} />
+        <Route path="/admin/users" element={<SuperadminUsersPage />} />
+        <Route path="/admin/studies" element={<AdminStudiesPage />} />
+      </Route>
+      <Route path="/profile" element={<ProfilePage />} />
+      <Route path="/settings" element={<SettingsPage />} />
+      <Route path="/conversations" element={<ConversationsPage />} />
+      <Route path="/favorites" element={<FavoritesPage />} />
+      <Route path="/my-walk" element={<MyWalkPage />} />
+    </Route>
+    
+    {/* Fallback route */}
+    <Route path="*" element={<Navigate to="/" replace={true} />} />
+    </Routes></main></div>
+  </></Providers></ErrorBoundary>);
 }
 
-export default App
+export default App;

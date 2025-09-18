@@ -1,6 +1,15 @@
-import React, { useState, useEffect, useCallback, Fragment } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  Fragment,
+} from 'react';
 import type { FormEvent } from 'react';
-import { groupRepository, type CharacterGroup, type CharacterGroupMapping } from '../../repositories/groupRepository';
+import { groupRepository } from '../../repositories/groupRepository';
+import type {
+  CharacterGroup,
+  CharacterGroupMapping,
+} from '../../repositories/groupRepository';
 import { characterRepository } from '../../repositories/characterRepository';
 import type { Character } from '../../services/supabase';
 
@@ -57,7 +66,7 @@ const GroupManagement: React.FC = () => {
   // Fetch all characters once
   const fetchCharacters = useCallback(async () => {
     try {
-      const characters = await characterRepository.getAll(true);
+      const characters = await characterRepository.getAll();
       setAllCharacters(characters);
     } catch (err) {
       console.error('Failed to fetch characters:', err);
@@ -262,7 +271,7 @@ const GroupManagement: React.FC = () => {
             onClick={() => setActiveTab('groups')}
             className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'groups'
-                ? 'border-blue-600 text-blue-700'
+                ? 'border-primary-500 text-primary-600'
                 : 'border-transparent text-gray-900 hover:text-gray-900 hover:border-gray-300'
             }`}
           >
@@ -272,7 +281,7 @@ const GroupManagement: React.FC = () => {
             onClick={() => setActiveTab('assignment')}
             className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'assignment'
-                ? 'border-blue-600 text-blue-700'
+                ? 'border-primary-500 text-primary-600'
                 : 'border-transparent text-gray-900 hover:text-gray-900 hover:border-gray-300'
             }`}
           >
@@ -298,7 +307,7 @@ const GroupManagement: React.FC = () => {
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   required
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -308,7 +317,7 @@ const GroupManagement: React.FC = () => {
                   rows={3}
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                 ></textarea>
               </div>
               <div>
@@ -318,7 +327,7 @@ const GroupManagement: React.FC = () => {
                   id="imageUrl"
                   value={formImageUrl}
                   onChange={(e) => setFormImageUrl(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -328,7 +337,7 @@ const GroupManagement: React.FC = () => {
                   id="icon"
                   value={formIcon}
                   onChange={(e) => setFormIcon(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                 />
               </div>
               <div>
@@ -338,14 +347,14 @@ const GroupManagement: React.FC = () => {
                   id="sortOrder"
                   value={formSortOrder}
                   onChange={(e) => setFormSortOrder(Number(e.target.value))}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                 />
               </div>
               <div className="flex space-x-4">
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:bg-gray-400"
+                  className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-gray-400"
                 >
                   {isLoading ? 'Saving...' : editingGroupId ? 'Update Group' : 'Create Group'}
                 </button>
@@ -387,7 +396,7 @@ const GroupManagement: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button
                             onClick={() => handleEditGroup(group)}
-                            className="text-blue-600 hover:text-blue-800 mr-4"
+                            className="text-primary-600 hover:text-primary-900 mr-4"
                           >
                             Edit
                           </button>
@@ -418,7 +427,7 @@ const GroupManagement: React.FC = () => {
               <select
                 value={selectedGroupId || ''}
                 onChange={(e) => setSelectedGroupId(e.target.value || null)}
-                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-600 focus:ring-blue-600 text-gray-900"
+                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 text-gray-900"
               >
                 <option value="">-- Select a group --</option>
                 {groups.map((group) => (

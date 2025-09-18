@@ -1,326 +1,303 @@
-import { supabase } from '../services/supabase';
-import type { Character } from '../services/supabase';
+import { supabase, type Character } from '../services/supabase';
 import { getSafeAvatarUrl } from '../utils/imageUtils';
 
 /**
- * Maps a raw character from the database to include safe avatar URLs
- * @param character - The raw character data from Supabase
- * @returns The character with processed avatar URLs
+ * Repository for interacting with Bible character data in Supabase
  */
-export function mapCharacter(character: Character): Character {
-  return {
-    ...character,
-    avatar_url: getSafeAvatarUrl(character.name, character.avatar_url),
-    feature_image_url: character.feature_image_url || undefined,
-  };
-}
-
-/**
- * Gets a list of all visible characters
- * @param includeHidden - Whether to include hidden characters (default: false)
- * @returns A promise resolving to an array of characters
- */
-export async function listCharacters(includeHidden = false): Promise<Character[]> {
-  let query = supabase
-    .from('characters')
-    .select('*');
-  
-  // Only include visible characters unless specifically requested
-  if (!includeHidden) {
-    query = query.eq('is_visible', true);
-  }
-  
-  const { data, error } = await query.order('name');
-  
-  if (error) {
-    console.error('Error fetching characters:', error);
-    return [];
-  }
-  
-  // Map characters to include safe avatar URLs
-  return (data || []).map(mapCharacter);
-}
-
-/**
- * Gets a character by ID
- * @param id - The character ID to fetch
- * @returns A promise resolving to the character or null if not found
- */
-export async function getCharacterById(id: string): Promise<Character | null> {
-  const { data, error } = await supabase
-    .from('characters')
-    .select('*')
-    .eq('id', id)
-    .single();
-  
-  if (error) {
-    console.error(`Error fetching character with ID ${id}:`, error);
-    return null;
-  }
-  
-  return data ? mapCharacter(data) : null;
-}
-
-/**
- * Gets characters by their IDs
- * @param ids - Array of character IDs to fetch
- * @returns A promise resolving to an array of characters
- */
-export async function getCharactersByIds(ids: string[]): Promise<Character[]> {
-  if (!ids.length) return [];
-  
-  const { data, error } = await supabase
-    .from('characters')
-    .select('*')
-    .in('id', ids);
-  
-  if (error) {
-    console.error('Error fetching characters by IDs:', error);
-    return [];
-  }
-  
-  return (data || []).map(mapCharacter);
-}
-
-/**
- * Searches for characters by name
- * @param searchTerm - The search term to match against character names
- * @param includeHidden - Whether to include hidden characters (default: false)
- * @returns A promise resolving to an array of matching characters
- */
-export async function searchCharacters(
-  searchTerm: string,
-  includeHidden = false
-): Promise<Character[]> {
-  let query = supabase
-    .from('characters')
-    .select('*')
-    .ilike('name', `%${searchTerm}%`);
-  
-  if (!includeHidden) {
-    query = query.eq('is_visible', true);
-  }
-  
-  const { data, error } = await query.order('name');
-  
-  if (error) {
-    console.error('Error searching characters:', error);
-    return [];
-  }
-  
-  return (data || []).map(mapCharacter);
-}
-
-// ---------------------------------------------------------------------------
-// Compatibility helpers (Bot360AI api naming)
-// ---------------------------------------------------------------------------
-
-export const sanitizeCharacter = mapCharacter;
-export function sanitizeCharacters(chars: Character[]): Character[] {
-  return chars.map(sanitizeCharacter);
-}
-
-// ---------------------------------------------------------------------------
-// Bot360AI-style repository wrapper
-// ---------------------------------------------------------------------------
-
 export const characterRepository = {
-  sanitizeCharacter,
-  sanitizeCharacters,
+  /**
+   * Sanitizes character data by replacing unsafe URLs with fallbacks
+   * @param character - The character object to sanitize
+   * @returns The sanitized character object
+   */
+  sanitizeCharacter(character: Character): Character {
+    if (!character) return character;
+    
+    // Create a copy to avoid mutating the original
+    const sanitized = { ...character };
+    
+    // Sanitize avatar URL if present
+    if (sanitized.avatar_url) {
+      sanitized.avatar_url = getSafeAvatarUrl(sanitized.name, sanitized.avatar_url);
+    }
+    
+    // Sanitize feature image URL if present
+    if (sanitized.feature_image_url) {
+      sanitized.feature_image_url = getSafeAvatarUrl(sanitized.name, sanitized.feature_image_url);
+    }
+    
+    return sanitized;
+  },
+  
+  /**
+   * Sanitizes an array of character objects
+   * @param characters - Array of character objects
+   * @returns Array of sanitized character objects
+   */
+  sanitizeCharacters(characters: Character[]): Character[] {
+    return characters.map(char => this.sanitizeCharacter(char));
+  },
 
+  /**
+   * Fetch all available Bible characters
+   * @returns Promise resolving to an array of Character objects
+   */
   async getAll(isAdmin: boolean = false): Promise<Character[]> {
-    let query = supabase.from('characters').select('*');
-    if (!isAdmin) {
-      // show visible or NULL (legacy) rows only
-      query = query.or('is_visible.is.null,is_visible.eq.true');
-    }
-    const { data, error } = await query.order('name');
-    if (error) {
+    try {
+      const { data, error } = await supabase
+        .from('characters')
+        .select('*')
+        // Hide characters that are not marked as visible **unless** this
+        // method is called by an admin user.
+        .modify((query) => {
+          if (!isAdmin) {
+            // Either `is_visible` is true *or* the column is NULL
+            // (NULL means legacy rows created before the column existed)
+            query.or('is_visible.is.null,is_visible.eq.true');
+          }
+        })
+        .order('name');
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Sanitize URLs in character data before returning
+      return this.sanitizeCharacters(data as Character[]);
+    } catch (error) {
       console.error('Failed to fetch characters:', error);
-      throw new Error('Failed to fetch characters');
+      throw new Error('Failed to fetch characters. Please try again later.');
     }
-    return sanitizeCharacters((data as Character[]) || []);
   },
 
+  /**
+   * Fetch a specific Bible character by ID
+   * @param id - The unique identifier of the character
+   * @returns Promise resolving to a Character object or null if not found
+   */
   async getById(id: string): Promise<Character | null> {
-    const { data, error } = await supabase
-      .from('characters')
-      .select('*')
-      .eq('id', id)
-      .single();
-    if (error) {
-      if (error.code === 'PGRST116') return null; // no rows
-      console.error(`Failed to fetch character ${id}:`, error);
-      throw new Error('Failed to fetch character');
+    try {
+      const { data, error } = await supabase
+        .from('characters')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // PGRST116 is the error code for "no rows returned"
+          return null;
+        }
+        throw error;
+      }
+      
+      // Sanitize URLs in character data before returning
+      return this.sanitizeCharacter(data as Character);
+    } catch (error) {
+      console.error(`Failed to fetch character with ID ${id}:`, error);
+      throw new Error('Failed to fetch character. Please try again later.');
     }
-    return data ? sanitizeCharacter(data as Character) : null;
   },
 
+  /**
+   * Fetch a specific Bible character by name
+   * @param name - The name of the character
+   * @returns Promise resolving to a Character object or null if not found
+   */
   async getByName(name: string): Promise<Character | null> {
-    const { data, error } = await supabase
-      .from('characters')
-      .select('*')
-      .ilike('name', name)
-      .single();
-    if (error) {
-      if (error.code === 'PGRST116') return null;
-      console.error(`Failed to fetch character by name ${name}:`, error);
-      throw new Error('Failed to fetch character');
+    try {
+      const { data, error } = await supabase
+        .from('characters')
+        .select('*')
+        .ilike('name', name)
+        .single();
+      
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // PGRST116 is the error code for "no rows returned"
+          return null;
+        }
+        throw error;
+      }
+      
+      // Sanitize URLs in character data before returning
+      return this.sanitizeCharacter(data as Character);
+    } catch (error) {
+      console.error(`Failed to fetch character with name ${name}:`, error);
+      throw new Error('Failed to fetch character. Please try again later.');
     }
-    return data ? sanitizeCharacter(data as Character) : null;
   },
 
-  async search(queryStr: string, isAdmin = false): Promise<Character[]> {
-    let query = supabase
-      .from('characters')
-      .select('*')
-      .ilike('name', `%${queryStr}%`);
-    if (!isAdmin) {
-      query = query.or('is_visible.is.null,is_visible.eq.true');
+  /**
+   * Search for Bible characters by name
+   * @param query - The search query
+   * @returns Promise resolving to an array of Character objects
+   */
+  async search(query: string, isAdmin: boolean = false): Promise<Character[]> {
+    try {
+      const { data, error } = await supabase
+        .from('characters')
+        .select('*')
+        .ilike('name', `%${query}%`)
+        .modify((builder) => {
+          if (!isAdmin) {
+            builder.or('is_visible.is.null,is_visible.eq.true');
+          }
+        })
+        .order('name');
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Sanitize URLs in character data before returning
+      return this.sanitizeCharacters(data as Character[]);
+    } catch (error) {
+      console.error(`Failed to search characters with query ${query}:`, error);
+      throw new Error('Failed to search characters. Please try again later.');
     }
-    const { data, error } = await query.order('name');
-    if (error) {
-      console.error(`Failed to search characters '${queryStr}':`, error);
-      throw new Error('Failed to search characters');
-    }
-    return sanitizeCharacters((data as Character[]) || []);
   },
 
+  /**
+   * Create a new Bible character
+   * @param character - Data for the new character (excluding id/created_at/updated_at)
+   * @returns Promise resolving to the newly-created Character object
+   */
   async createCharacter(
-    character: Omit<Character, 'id' | 'created_at' | 'updated_at'>,
+    character: Omit<
+      Character,
+      'id' | 'created_at' | 'updated_at'
+    >
   ): Promise<Character> {
-    const toInsert = {
-      ...character,
-      avatar_url: character.avatar_url
-        ? getSafeAvatarUrl(character.name, character.avatar_url)
-        : character.avatar_url,
-      feature_image_url: character.feature_image_url
-        ? getSafeAvatarUrl(character.name, character.feature_image_url)
-        : character.feature_image_url,
-    };
-    const { data, error } = await supabase
-      .from('characters')
-      .insert(toInsert)
-      .select('*')
-      .single();
-    if (error) {
+    try {
+      // Sanitize URLs before storing in the database
+      const sanitizedCharacter = {
+        ...character,
+        avatar_url: character.avatar_url ? 
+          getSafeAvatarUrl(character.name, character.avatar_url) : 
+          character.avatar_url,
+        feature_image_url: character.feature_image_url ? 
+          getSafeAvatarUrl(character.name, character.feature_image_url) : 
+          character.feature_image_url
+      };
+
+      const { data, error } = await supabase
+        .from('characters')
+        .insert(sanitizedCharacter)
+        .select('*')
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return this.sanitizeCharacter(data as Character);
+    } catch (error) {
       console.error('Failed to create character:', error);
-      throw new Error('Failed to create character');
+      throw new Error('Failed to create character. Please try again later.');
     }
-    return sanitizeCharacter(data as Character);
   },
 
+  /**
+   * Update an existing character
+   * @param id - Character ID
+   * @param updates - Partial character fields to update
+   * @returns Promise resolving to the updated Character object
+   */
   async updateCharacter(
     id: string,
-    updates: Partial<Omit<Character, 'id' | 'created_at' | 'updated_at'>>,
+    updates: Partial<
+      Omit<Character, 'id' | 'created_at' | 'updated_at'>
+    >
   ): Promise<Character> {
-    const safeUpdates = { ...updates } as typeof updates;
-    if (updates.avatar_url && updates.name) {
-      safeUpdates.avatar_url = getSafeAvatarUrl(updates.name, updates.avatar_url);
-    }
-    if (updates.feature_image_url && updates.name) {
-      safeUpdates.feature_image_url = getSafeAvatarUrl(
-        updates.name,
-        updates.feature_image_url,
-      );
-    }
-    const { data, error } = await supabase
-      .from('characters')
-      .update({ ...safeUpdates, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select('*')
-      .single();
-    if (error) {
+    try {
+      // Sanitize URLs in updates before storing
+      const sanitizedUpdates = { ...updates };
+      
+      if (updates.avatar_url && updates.name) {
+        sanitizedUpdates.avatar_url = getSafeAvatarUrl(updates.name, updates.avatar_url);
+      }
+      
+      if (updates.feature_image_url && updates.name) {
+        sanitizedUpdates.feature_image_url = getSafeAvatarUrl(updates.name, updates.feature_image_url);
+      }
+
+      const { data, error } = await supabase
+        .from('characters')
+        .update({ ...sanitizedUpdates, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select('*')
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      return this.sanitizeCharacter(data as Character);
+    } catch (error) {
       console.error(`Failed to update character ${id}:`, error);
-      throw new Error('Failed to update character');
+      throw new Error('Failed to update character. Please try again later.');
     }
-    return sanitizeCharacter(data as Character);
   },
 
+  /**
+   * Delete a character by ID
+   * @param id - Character ID
+   */
   async deleteCharacter(id: string): Promise<void> {
-    const { error } = await supabase.from('characters').delete().eq('id', id);
-    if (error) {
+    try {
+      const { error } = await supabase
+        .from('characters')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
       console.error(`Failed to delete character ${id}:`, error);
-      throw new Error('Failed to delete character');
+      throw new Error('Failed to delete character. Please try again later.');
     }
   },
 
+  /**
+   * Bulk create characters (e.g., via CSV upload)
+   * @param characters - Array of character objects (same shape as createCharacter input)
+   * @returns Promise resolving to the array of created Character objects
+   */
   async bulkCreateCharacters(
-    chars: Omit<Character, 'id' | 'created_at' | 'updated_at'>[],
+    characters: Omit<
+      Character,
+      'id' | 'created_at' | 'updated_at'
+    >[]
   ): Promise<Character[]> {
-    if (chars.length === 0) return [];
-    const sanitized = chars.map((c) => ({
-      ...c,
-      avatar_url: c.avatar_url
-        ? getSafeAvatarUrl(c.name, c.avatar_url)
-        : c.avatar_url,
-      feature_image_url: c.feature_image_url
-        ? getSafeAvatarUrl(c.name, c.feature_image_url)
-        : c.feature_image_url,
-    }));
-    const { data, error } = await supabase
-      .from('characters')
-      .insert(sanitized)
-      .select('*');
-    if (error) {
-      console.error('Failed bulk insert:', error);
-      throw new Error('Failed to bulk create characters');
+    if (characters.length === 0) return [];
+
+    try {
+      // Sanitize URLs in all characters before storing
+      const sanitizedCharacters = characters.map(char => ({
+        ...char,
+        avatar_url: char.avatar_url ? 
+          getSafeAvatarUrl(char.name, char.avatar_url) : 
+          char.avatar_url,
+        feature_image_url: char.feature_image_url ? 
+          getSafeAvatarUrl(char.name, char.feature_image_url) : 
+          char.feature_image_url
+      }));
+
+      const { data, error } = await supabase
+        .from('characters')
+        .insert(sanitizedCharacters)
+        .select('*');
+
+      if (error) {
+        throw error;
+      }
+
+      return this.sanitizeCharacters(data as Character[]);
+    } catch (error) {
+      console.error('Failed to bulk create characters:', error);
+      throw new Error('Failed to bulk create characters. Please try again later.');
     }
-    return sanitizeCharacters((data as Character[]) || []);
-  },
+  }
 };
-
-// Mutations
-// ---------------------------------------------------------------------------
-
-/**
- * Input type for creating or updating a character.
- * All fields are optional except `id` for updates.
- *
- * NOTE: created_at / updated_at are handled by Supabase triggers.
- */
-export type CharacterInput = Partial<Omit<Character, 'created_at' | 'updated_at'>>;
-
-/**
- * Creates a new character or updates an existing one (upsert).
- * When `input.id` exists, Supabase will perform a conflict-aware update.
- *
- * @param input - Character fields to create/update
- * @returns The newly saved character (mapped) or null on failure
- */
-export async function upsertCharacter(
-  input: CharacterInput,
-): Promise<Character | null> {
-  const { data, error } = await supabase
-    .from('characters')
-    .upsert(input, { onConflict: 'id' })
-    .select('*')
-    .single();
-
-  if (error) {
-    console.error('Error upserting character:', error);
-    return null;
-  }
-
-  return data ? mapCharacter(data) : null;
-}
-
-/**
- * Deletes a character by ID.
- *
- * @param id - Character ID to delete
- * @returns true when deletion succeeds, false otherwise
- */
-export async function deleteCharacter(id: string): Promise<boolean> {
-  const { error } = await supabase
-    .from('characters')
-    .delete()
-    .eq('id', id);
-
-  if (error) {
-    console.error(`Error deleting character ${id}:`, error);
-    return false;
-  }
-
-  return true;
-}
