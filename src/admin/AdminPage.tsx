@@ -7,6 +7,8 @@ import GroupManagement from '../components/admin/GroupManagement';
 import AdminFAQEditor from '../components/admin/AdminFAQEditor';
 import AccountTierManagement from '../components/admin/AccountTierManagement';
 import AdminStudiesPage from '../components/admin/AdminStudiesPage';
+import AdminFeaturedAssistant from '../components/admin/AdminFeaturedAssistant';
+import AdminFavorites from '../components/admin/AdminFavorites';
 
 // Helper function for basic CSV parsing
 const parseCSV = (csvText: string): Array<Record<string, string>> => {
@@ -49,6 +51,17 @@ export default function AdminPage() {
    * CHECKS BEFORE DEPLOYING TO PRODUCTION.
    */
   const isAdmin = true;
+
+  /* ------------------------------------------------------------------
+   * Apply light admin surface on body while this component is mounted
+   * ---------------------------------------------------------------- */
+  useEffect(() => {
+    document.body.classList.add('admin-surface');
+    return () => {
+      document.body.classList.remove('admin-surface');
+    };
+  }, []);
+
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +74,8 @@ export default function AdminPage() {
   type AdminMainTab =
     | 'characters'
     | 'groups'
+    | 'featured'
+    | 'favorites'
     | 'faq'
     | 'tiers'
     | 'roundtable'
@@ -319,6 +334,15 @@ export default function AdminPage() {
         <p className="text-gray-700 mb-4">
           Welcome! Manage your assistants and related data here.
         </p>
+        {/* Superadmin CTA */}
+        <div className="mb-6">
+          <a
+            href="/admin/superadmin"
+            className="inline-flex items-center px-4 py-2 rounded-md bg-amber-100 text-amber-800 border border-amber-200 hover:bg-amber-200"
+          >
+            Superadmin: Manage Users &amp; Organizations
+          </a>
+        </div>
 
         {/* Top-level tab navigation */}
         <div className="mb-8 border-b border-gray-200">
@@ -344,6 +368,26 @@ export default function AdminPage() {
               Groups
             </button>
             <button
+              onClick={() => setActiveTab('featured')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'featured'
+                  ? 'border-blue-600 text-blue-700'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Featured Assistant
+            </button>
+            <button
+              onClick={() => setActiveTab('favorites')}
+              className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'favorites'
+                  ? 'border-blue-600 text-blue-700'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              User Favorites
+            </button>
+            <button
               onClick={() => setActiveTab('faq')}
               className={`whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'faq'
@@ -351,7 +395,7 @@ export default function AdminPage() {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              FAQ
+              FAQ Editor
             </button>
             <button
               onClick={() => setActiveTab('tiers')}
@@ -361,7 +405,7 @@ export default function AdminPage() {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Tiers
+              Account Tiers
             </button>
             <button
               onClick={() => setActiveTab('roundtable')}
@@ -381,7 +425,7 @@ export default function AdminPage() {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Studies
+              Content Studies
             </button>
           </nav>
         </div>
@@ -730,6 +774,14 @@ export default function AdminPage() {
           )}
         </section>
         </>
+        )}
+
+        {activeTab === 'featured' && (
+          <AdminFeaturedAssistant />
+        )}
+
+        {activeTab === 'favorites' && (
+          <AdminFavorites />
         )}
 
         {activeTab === 'groups' && (
