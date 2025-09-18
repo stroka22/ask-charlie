@@ -8,6 +8,7 @@ import {
   Route,
   Link,
   useNavigate,
+  useLocation,
 } from 'react-router-dom'
 import {
   ScaleIcon,
@@ -17,6 +18,7 @@ import {
 import Button from './ui/Button'
 import AdminPage from './admin/AdminPage'
 import LoginPage from './admin/LoginPage'
+import clsx from 'clsx'
 
 // Main app content with access to chat context
 function Hero() {
@@ -120,32 +122,36 @@ function ChatPage() {
 
 function AppContent() {
   /* No local chat hooks needed here; Hero and ChatPage handle persona logic */
+  const location = useLocation()
+  const isAdminRoute = location.pathname.startsWith('/admin')
 
   return (
-    <div className="min-h-screen flex flex-col bg-navy-gradient">
+    <div className={clsx('min-h-screen flex flex-col', isAdminRoute ? 'admin-surface' : 'bg-navy-gradient')}>
       {/* Header with patriotic styling */}
-      <header className="sticky top-0 z-50 bg-navy-900/95 backdrop-blur-sm shadow-md border-b border-brand-blue/30">
+      <header className={clsx('sticky top-0 z-50 backdrop-blur-sm shadow-md', isAdminRoute ? 'bg-white border-b border-gray-200' : 'bg-navy-900/95 border-b border-brand-blue/30')}>
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           {/* Ask Charlie wordmark */}
           <div className="flex-shrink-0">
-            <Link to="/" className="text-white font-extrabold text-xl tracking-tight">
+            <Link to="/" className={clsx('font-extrabold text-xl tracking-tight', isAdminRoute ? 'text-gray-900' : 'text-white')}>
               Ask<span className="text-brand-red">Charlie</span>
             </Link>
           </div>
           
           {/* Simple nav */}
           <nav className="flex items-center space-x-6">
-            <Link to="/" className="text-sm font-medium text-white hover:text-brand-gold transition-colors">
+            <Link to="/" className={clsx('text-sm font-medium transition-colors', isAdminRoute ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-brand-gold')}>
               Home
             </Link>
-            <Link to="/admin" className="text-sm font-medium text-white hover:text-brand-gold transition-colors">
+            <Link to="/admin" className={clsx('text-sm font-medium transition-colors', isAdminRoute ? 'text-gray-700 hover:text-gray-900' : 'text-white hover:text-brand-gold')}>
               Admin
             </Link>
           </nav>
         </div>
         
         {/* Patriotic stripe */}
-        <div className="h-1 w-full bg-gradient-to-r from-brand-red via-white to-brand-blue"></div>
+        {!isAdminRoute && (
+          <div className="h-1 w-full bg-gradient-to-r from-brand-red via-white to-brand-blue"></div>
+        )}
       </header>
 
       <main className="flex-1">
@@ -158,9 +164,9 @@ function AppContent() {
       </main>
       
       {/* Footer with patriotic accent */}
-      <footer className="bg-navy-800 border-t border-brand-red/30 py-4">
+      <footer className={clsx(isAdminRoute ? 'bg-white border-t border-gray-200' : 'bg-navy-800 border-t border-brand-red/30', 'py-4')}>
         <div className="container mx-auto px-4 text-center">
-          <p className="text-sm text-white/60">
+          <p className={clsx('text-sm', isAdminRoute ? 'text-gray-600' : 'text-white/60')}>
             Ask Charlie © {new Date().getFullYear()} • 
             <span className="mx-2 text-brand-red">♦</span>
             Faith • Freedom • America
