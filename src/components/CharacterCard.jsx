@@ -1,0 +1,604 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { memo, useState, useCallback, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+
+// Debounce function to improve performance
+const useDebounce = (callback, delay) => {
+  const timeoutRef = useRef(null);
+  
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+  
+  return useCallback((...args) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      callback(...args);
+    }, delay);
+  }, [callback, delay]);
+};
+
+// Memoized SVG components to improve performance
+const StarIcon = memo(({ isFilled }) => (
+    _jsx("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 20 20",
+        fill: isFilled ? "currentColor" : "none",
+        stroke: "currentColor",
+        strokeWidth: isFilled ? "0" : "1.5",
+        className: "h-5 w-5",
+        children: _jsx("path", {
+            d: "M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.8-2.034c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+        })
+    })
+));
+
+const BookmarkIcon = memo(({ isFilled }) => (
+    _jsx("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        viewBox: "0 0 20 20",
+        fill: isFilled ? "currentColor" : "none",
+        stroke: "currentColor",
+        strokeWidth: isFilled ? "0" : "1.5",
+        className: "h-5 w-5",
+        children: _jsx("path", {
+            d: "M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z"
+        })
+    })
+));
+
+const InfoIcon = memo(() => (
+    _jsx("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        className: "h-5 w-5",
+        viewBox: "0 0 20 20",
+        fill: "currentColor",
+        children: _jsx("path", {
+            fillRule: "evenodd",
+            d: "M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z",
+            clipRule: "evenodd"
+        })
+    })
+));
+
+const ChatIcon = memo(() => (
+    _jsx("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        className: "h-4 w-4 mr-2",
+        viewBox: "0 0 20 20",
+        fill: "currentColor",
+        children: _jsx("path", {
+            fillRule: "evenodd",
+            d: "M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z",
+            clipRule: "evenodd"
+        })
+    })
+));
+
+const CharacterCard = ({
+    character,
+    onSelect,
+    isSelected = false,
+    isFavorite = false,
+    onToggleFavorite,
+    isFeatured = false,
+    onSetAsFeatured,
+    /* New premium-gating props */
+    canChat = true,
+    onRequireUpgrade
+}) => {
+    // ------------------------------------------------------------------
+    // Safety check
+    // ------------------------------------------------------------------
+    if (!character || !character.id || !character.name) return null;
+
+    // ------------------------------------------------------------------
+    // Local state & memoised callbacks
+    // ------------------------------------------------------------------
+    const [isHovered, setIsHovered] = useState(false);
+    const [isDescriptionVisible, setIsDescriptionVisible] = useState(false);
+    const cardRef = useRef(null);
+    const modalRef = useRef(null);
+    const [modalPos, setModalPos] = useState({ left: 0, top: 0 });
+    /* Store the coordinates of the click that opened the popup so we
+       can anchor the modal close to the info-icon rather than the whole
+       card. Default to {0,0}. */
+    const lastClickPos = useRef({ x: 0, y: 0 });
+
+    /* ------------------------------------------------------------------
+     * Helper: return all scrollable ancestors (plus window) so we can
+     * re-measure when any of them scroll.
+     * ------------------------------------------------------------------ */
+    const getScrollableParents = (el) => {
+        const parents = [];
+        if (!el) return parents;
+        let node = el.parentElement;
+        while (node && node !== document.body) {
+            const style = window.getComputedStyle(node);
+            const oy = style.overflowY;
+            const ox = style.overflowX;
+            if (
+                (oy && (oy.includes('auto') || oy.includes('scroll'))) ||
+                (ox && (ox.includes('auto') || ox.includes('scroll')))
+            ) {
+                parents.push(node);
+            }
+            node = node.parentElement;
+        }
+        parents.push(window);
+        return parents;
+    };
+
+    /* ------------------------------------------------------------------
+     * Utility that measures card & modal then updates modalPos so the
+     * popup is centred over the card but kept inside the viewport.
+     * ------------------------------------------------------------------ */
+    const measureAndPosition = useCallback(() => {
+        if (!cardRef.current || !modalRef.current) return;
+
+        const rect = cardRef.current.getBoundingClientRect();
+        const modalRect = modalRef.current.getBoundingClientRect();
+
+        // If the modal hasn't rendered its dimensions yet, try again shortly
+        if (modalRect.width === 0 || modalRect.height === 0) {
+            setTimeout(measureAndPosition, 50);
+            return;
+        }
+
+        // Prefer the VisualViewport API when available (mobile browsers).
+        const vv = typeof window !== 'undefined' && window.visualViewport ? window.visualViewport : null;
+        const vw = vv ? vv.width : window.innerWidth;
+        const vh = vv ? vv.height : window.innerHeight;
+        const vx = vv ? vv.offsetLeft : 0;
+        const vy = vv ? vv.offsetTop : 0;
+        const margin = 12;
+
+        /* ------------------------------------------------------------------
+         * If we have the exact click/touch coordinate that opened the popup,
+         * anchor the modal around that point instead of the card centre.
+         * ------------------------------------------------------------------ */
+        if (
+            (lastClickPos.current.x || lastClickPos.current.y) &&
+            typeof lastClickPos.current.x === 'number' &&
+            typeof lastClickPos.current.y === 'number'
+        ) {
+            let left = lastClickPos.current.x - modalRect.width / 2;
+            left = Math.min(
+                Math.max(vx + margin, left),
+                vx + vw - modalRect.width - margin
+            );
+
+            // Try to place above the click; if not enough space, place below.
+            let top = lastClickPos.current.y - modalRect.height - margin;
+            if (top < vy + margin) {
+                top = lastClickPos.current.y + margin;
+            }
+            top = Math.min(
+                Math.max(vy + margin, top),
+                vy + vh - modalRect.height - margin
+            );
+
+            const onScreen =
+                left >= vx + margin && left + modalRect.width <= vx + vw - margin &&
+                top >= vy + margin && top + modalRect.height <= vy + vh - margin;
+            if (!onScreen) {
+                left = vx + (vw - modalRect.width) / 2;
+                top = vy + (vh - modalRect.height) / 2;
+            }
+            setModalPos({ left, top });
+            return;
+        }
+
+        // Centre horizontally over the card then clamp
+        let left = rect.left + rect.width / 2 - modalRect.width / 2;
+        left = Math.min(
+            Math.max(vx + margin, left),
+            vx + vw - modalRect.width - margin
+        );
+
+        // Prefer 12px above card, fallback below if not enough space
+        let top = rect.top - modalRect.height - margin;        // try above
+        if (top < margin) {
+            top = rect.bottom + margin;                        // fallback below
+        }
+        // Clamp to viewport/visual viewport
+        top = Math.min(
+            Math.max(vy + margin, top),
+            vy + vh - modalRect.height - margin
+        );
+
+        const onScreen =
+            left >= vx + margin && left + modalRect.width <= vx + vw - margin &&
+            top >= vy + margin && top + modalRect.height <= vy + vh - margin;
+        if (!onScreen) {
+            left = vx + (vw - modalRect.width) / 2;
+            top = vy + (vh - modalRect.height) / 2;
+        }
+        setModalPos({ left, top });
+    }, []);
+
+    // Debounced handlers to improve performance
+    const handleMouseEnter = useDebounce(() => setIsHovered(true), 50);
+    const handleMouseLeave = useDebounce(() => setIsHovered(false), 50);
+
+    const handleOpenInfo = useCallback((e) => {
+        e.stopPropagation();
+
+        if (e.currentTarget && typeof e.currentTarget.getBoundingClientRect === 'function') {
+            const br = e.currentTarget.getBoundingClientRect();
+            lastClickPos.current = { x: br.left + br.width / 2, y: br.top + br.height / 2 };
+        }
+
+        /* ------------------------------------------------------------------
+         * Record where the user clicked / touched so the modal can appear
+         * near the icon rather than centred on the card.
+         * ------------------------------------------------------------------ */
+        let x = e.clientX;
+        let y = e.clientY;
+        // Touch events (mobile)
+        if ((!x || !y) && e.touches && e.touches[0]) {
+            x = e.touches[0].clientX;
+            y = e.touches[0].clientY;
+        }
+        if (typeof x === 'number' && typeof y === 'number') {
+            lastClickPos.current = { x, y };
+        }
+
+        setIsDescriptionVisible(true);
+        // Measure after modal has appeared in the DOM
+        setTimeout(measureAndPosition, 0);
+    }, []);
+
+    const handleCloseInfo = useCallback((e) => {
+        e.stopPropagation();
+        setIsDescriptionVisible(false);
+    }, []);
+
+    const handleFavoriteClick = useCallback((e) => {
+        e.stopPropagation();
+        if (typeof onToggleFavorite === 'function') onToggleFavorite();
+    }, [onToggleFavorite]);
+
+    const handleSetFeatured = useCallback((e) => {
+        e.stopPropagation();
+        if (typeof onSetAsFeatured === 'function') onSetAsFeatured(character);
+    }, [onSetAsFeatured, character]);
+
+    const handleChatClick = useCallback((e) => {
+        e.stopPropagation();
+        /* Gate by canChat flag */
+        if (canChat) {
+            onSelect(character);
+        } else if (typeof onRequireUpgrade === 'function') {
+            onRequireUpgrade(character);
+        }
+    }, [onSelect, character]);
+
+    /* ------------------------------------------------------------------
+     * Re-measure modal position on window resize / scroll while visible
+     * ------------------------------------------------------------------ */
+    useEffect(() => {
+        if (!isDescriptionVisible) return;
+
+        // Initial delayed measure in case images/fonts load later
+        const timeoutId = setTimeout(measureAndPosition, 50);
+
+        window.addEventListener('resize', measureAndPosition);
+        window.addEventListener('scroll', measureAndPosition, true);
+
+        // Track scroll on all scrollable ancestors
+        const scrollParents = getScrollableParents(cardRef.current);
+        scrollParents.forEach((p) =>
+            p.addEventListener('scroll', measureAndPosition, true)
+        );
+
+        // Listen to visualViewport changes if supported
+        let vvHandlers = [];
+        if (typeof window !== 'undefined' && window.visualViewport) {
+            const vv = window.visualViewport;
+            vv.addEventListener('resize', measureAndPosition);
+            vv.addEventListener('scroll', measureAndPosition);
+            vvHandlers = [vv];
+        }
+
+        // rAF loop to continually validate position (cheap)
+        let raf;
+        const rafLoop = () => {
+            measureAndPosition();
+            raf = requestAnimationFrame(rafLoop);
+        };
+        raf = requestAnimationFrame(rafLoop);
+
+        // Re-measure if modal's own size changes (e.g., fonts/images load)
+        let ro;
+        if (modalRef.current && typeof ResizeObserver !== 'undefined') {
+            ro = new ResizeObserver(measureAndPosition);
+            ro.observe(modalRef.current);
+        }
+
+        return () => {
+            clearTimeout(timeoutId);
+            window.removeEventListener('resize', measureAndPosition);
+            window.removeEventListener('scroll', measureAndPosition, true);
+            if (ro) ro.disconnect();
+            scrollParents.forEach((p) =>
+                p.removeEventListener('scroll', measureAndPosition, true)
+            );
+            vvHandlers.forEach((vv) => {
+                vv.removeEventListener('resize', measureAndPosition);
+                vv.removeEventListener('scroll', measureAndPosition);
+            });
+            if (raf) cancelAnimationFrame(raf);
+        };
+    }, [isDescriptionVisible, measureAndPosition]);
+
+    const avatarUrl = character.avatar_url ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(character.name)}&background=random`;
+
+    /* ------------------------------------------------------------------
+     * Prevent background page from scrolling while modal is open.
+     * Especially important on mobile where body scroll + fixed overlay
+     * can create "rubber-band" effects or move the underlying content.
+     * ------------------------------------------------------------------ */
+    useEffect(() => {
+        if (!isDescriptionVisible) return;
+        const prevOverflow = document.body.style.overflow;
+        const prevTouchAction = document.body.style.touchAction;
+        document.body.style.overflow = 'hidden';
+        document.body.style.touchAction = 'none';
+        return () => {
+            document.body.style.overflow = prevOverflow;
+            document.body.style.touchAction = prevTouchAction;
+        };
+    }, [isDescriptionVisible]);
+
+    /* ------------------------------------------------------------------
+     * Pre-build the info modal portal so the JSX below stays tidy.
+     * ------------------------------------------------------------------ */
+    const infoPortal = isDescriptionVisible ? createPortal(
+        _jsxs("div", {
+            className: "fixed inset-0 z-50 bg-black/60",
+            style: {
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100vw',
+                height: '100vh',
+                zIndex: 9999,
+                padding: '1rem'
+            },
+            onClick: handleCloseInfo,
+            children: [
+                _jsxs("div", {
+                    ref: modalRef,
+                    className: "relative bg-gradient-to-br from-indigo-900 via-indigo-800 to-indigo-700 rounded-lg p-3 w-full max-w-xs shadow-xl border border-cyan-400",
+                    style: {
+                        position: 'fixed',
+                        left: `${modalPos.left}px`,
+                        top: `${modalPos.top}px`,
+                        maxHeight: '60vh',
+                        overflowY: 'auto',
+                        width: 'min(300px, calc(100vw - 24px))',
+                        zIndex: 10000,
+                    },
+                    onClick: (e) => e.stopPropagation(),
+                    children: [
+                        _jsx("div", { className: "absolute top-0 right-0 w-20 h-20 bg-cyan-400/10 rounded-full -mr-6 -mt-6 z-0" }),
+                        _jsx("div", { className: "absolute bottom-0 left-0 w-24 h-24 bg-cyan-400/10 rounded-full -ml-6 -mb-6 z-0" }),
+                        _jsx("button", {
+                            className: "absolute top-2 right-2 text-white hover:text-red-400 bg-indigo-700 rounded-full p-1 shadow-sm z-10 transition-colors",
+                            onClick: handleCloseInfo,
+                            "aria-label": "Close description",
+                            title: "Close",
+                            children: _jsx("svg", {
+                                xmlns: "http://www.w3.org/2000/svg",
+                                className: "h-5 w-5",
+                                fill: "none",
+                                viewBox: "0 0 24 24",
+                                stroke: "currentColor",
+                                children: _jsx("path", {
+                                    strokeLinecap: "round",
+                                    strokeLinejoin: "round",
+                                    strokeWidth: 2,
+                                    d: "M6 18L18 6M6 6l12 12"
+                                })
+                            })
+                        }),
+                        _jsx("div", {
+                            className: "w-12 h-12 mx-auto mb-2 rounded-full overflow-hidden border-3 border-cyan-400 shadow-md relative z-10",
+                            children: _jsx("img", {
+                                src: avatarUrl,
+                                alt: character.name,
+                                className: "w-full h-full object-cover"
+                            })
+                        }),
+                        _jsxs("div", {
+                            className: "text-center mb-4 relative z-10",
+                            children: [
+                                _jsx("h2", {
+                                    className: "text-lg font-bold text-cyan-400 mb-1",
+                                    children: character.name
+                                }),
+                                _jsx("div", { className: "h-0.5 w-16 bg-cyan-400 rounded-full mx-auto" })
+                            ]
+                        }),
+                        character.bible_book && _jsxs("div", {
+                            className: "bg-indigo-800/50 border border-cyan-400/30 rounded-md p-3 mb-3 relative z-10",
+                            children: [
+                                _jsxs("div", {
+                                    className: "flex items-center mb-2",
+                                    children: [
+                                        _jsx("svg", {
+                                            xmlns: "http://www.w3.org/2000/svg",
+                                            className: "h-4 w-4 text-cyan-400 mr-1",
+                                            viewBox: "0 0 20 20",
+                                            fill: "currentColor",
+                                            children: _jsx("path", {
+                                                d: "M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"
+                                            })
+                                        }),
+                                        _jsx("h3", { className: "text-base font-semibold text-cyan-300", children: "Scripture" })
+                                    ]
+                                }),
+                                _jsx("div", {
+                                    className: "flex flex-wrap gap-1",
+                                    children: character.bible_book.split(',').map((book, index) => (
+                                        _jsx("span", {
+                                            className: "bg-indigo-600 text-white px-2 py-0.5 rounded-full text-xs font-medium shadow-sm",
+                                            children: book.trim()
+                                        }, `book-${index}-${book.trim()}`)
+                                    ))
+                                })
+                            ]
+                        }),
+                        _jsxs("div", {
+                            className: "relative z-10",
+                            children: [
+                                _jsxs("div", {
+                                    className: "flex items-center mb-2",
+                                    children: [
+                                        _jsx("svg", {
+                                            xmlns: "http://www.w3.org/2000/svg",
+                                            className: "h-4 w-4 text-cyan-400 mr-1",
+                                            viewBox: "0 0 20 20",
+                                            fill: "currentColor",
+                                            children: _jsx("path", {
+                                                fillRule: "evenodd",
+                                                d: "M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z",
+                                                clipRule: "evenodd"
+                                            })
+                                        }),
+                                        _jsx("h3", { className: "text-base font-semibold text-cyan-300", children: "About" })
+                                    ]
+                                }),
+                                _jsx("p", { className: "text-white/90 text-xs leading-relaxed", children: character.description })
+                            ]
+                        }),
+                        _jsxs("button", {
+                            onClick: (e) => { e.stopPropagation(); onSelect(character); setIsDescriptionVisible(false); },
+                            className: "mt-4 w-full bg-cyan-400 hover:bg-cyan-500 text-indigo-900 font-medium py-2 px-4 rounded-md shadow-md transition-colors flex items-center justify-center relative z-10",
+                            children: [
+                                _jsx(ChatIcon, {}),
+                                _jsx("span", { className: "ml-2 text-sm md:text-base truncate", children: `Start chat with ${character.name}` })
+                            ]
+                        })
+                    ]
+                })
+            ]
+        }),
+        document.body
+    ) : null;
+
+    // ------------------------------------------------------------------
+    // Render
+    // ------------------------------------------------------------------
+    return (
+        _jsxs("div", {
+            /* ------------------------------------------------------------------
+             * When the modal is open (isDescriptionVisible === true) we suppress
+             * all hover/transform effects so the background card stays still
+             * behind the overlay.  This prevents the "screen shaking" users
+             * experienced when moving the mouse between the card and the modal.
+             * ------------------------------------------------------------------ */
+            ref: cardRef,
+            className: `bg-white/10 p-4 rounded-lg transition-colors cursor-pointer h-72 flex flex-col justify-between border-2 border-white/20 hover:border-cyan-400 ${
+                isDescriptionVisible
+                    ? 'bg-white/15'                       /* fixed state */
+                    : isHovered
+                        ? 'hover:bg-white/20 transform scale-105'
+                        : 'hover:bg-white/15'
+            }`,
+            onClick: () => onSelect(character),
+            /* Disable hover handlers while the modal is open to avoid jitter */
+            onMouseEnter: !isDescriptionVisible ? handleMouseEnter : undefined,
+            onMouseLeave: !isDescriptionVisible ? handleMouseLeave : undefined,
+            children: [
+
+                _jsx("img", {
+                    src: avatarUrl,
+                    alt: character.name,
+                    className: "w-20 h-20 rounded-full mx-auto mb-3",
+                    onError: (e) => {
+                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(character.name)}&background=random`;
+                    }
+                }),
+                _jsx("h3", {
+                    /* Further increase character name for better readability */
+                    className: "font-bold text-2xl text-cyan-400 text-center mb-2",
+                    children: character.name
+                }),
+
+                _jsxs("div", {
+                    className: "flex justify-center gap-2 mb-3",
+                    children: [
+                        _jsx("button", {
+                            onClick: handleFavoriteClick,
+                            className: `text-gray-400 hover:text-cyan-400 p-1 ${isFavorite ? 'text-cyan-400' : ''}`,
+                            "aria-label": "Toggle favorite",
+                            title: isFavorite ? "Remove from Favorites" : "Add to Favorites",
+                            "data-tooltip": isFavorite ? "Remove from Favorites" : "Add to Favorites",
+                            children: _jsx(StarIcon, { isFilled: isFavorite })
+                        }),
+                        _jsx("button", {
+                            onClick: handleSetFeatured,
+                            className: `text-gray-400 hover:text-cyan-400 p-1 ${isFeatured ? 'text-cyan-400' : ''}`,
+                            "aria-label": "Set as featured",
+                            title: isFeatured ? "Currently Featured" : "Set as Featured",
+                            "data-tooltip": isFeatured ? "Currently Featured" : "Set as Featured",
+                            children: _jsx(BookmarkIcon, { isFilled: isFeatured })
+                        }),
+                        _jsx("button", {
+                            onClick: handleOpenInfo,
+                            className: "text-gray-400 hover:text-cyan-300 p-1",
+                            "aria-label": "Toggle description",
+                            title: "Info",
+                            "data-tooltip": "Info",
+                            children: _jsx(InfoIcon, {})
+                        }),
+                        _jsx("button", {
+                            onClick: handleChatClick,
+                            className: "text-gray-400 hover:text-green-400 p-1",
+                            "aria-label": "Chat with character",
+                            title: "Chat",
+                            "data-tooltip": "Chat",
+                            children: _jsx(ChatIcon, {})
+                        })
+                    ]
+                }),
+
+                /* Render the portal-based info modal */ 
+                infoPortal,
+
+                _jsx("button", {
+                    onClick: handleChatClick,
+                    className: `w-full flex items-center justify-center font-bold py-2 px-4 rounded-lg transition-colors ${
+                        canChat
+                            ? 'bg-cyan-400 hover:bg-cyan-500 text-indigo-900'
+                            : 'bg-gray-400 text-gray-800 cursor-pointer hover:bg-gray-400'
+                    }`,
+                    children: _jsxs("span", {
+                        className: "flex items-center gap-1 text-sm md:text-base whitespace-nowrap overflow-hidden text-ellipsis",
+                        children: [
+                            !canChat && _jsx("svg", {
+                                xmlns: "http://www.w3.org/2000/svg",
+                                className: "h-4 w-4",
+                                viewBox: "0 0 20 20",
+                                fill: "currentColor",
+                                children: _jsx("path", { d: "M10 2a4 4 0 00-4 4v2H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-1V6a4 4 0 00-4-4zM8 6a2 2 0 114 0v2H8V6z" })
+                            }),
+                            canChat ? "Chat Now" : "Upgrade to Chat"
+                        ]
+                    })
+                })
+            ]
+        })
+    );
+};
+
+export default memo(CharacterCard);

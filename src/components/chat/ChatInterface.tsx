@@ -1,74 +1,275 @@
-import { useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useChat } from '../../contexts/ChatContext';
-import ChatInput from './ChatInput';
 import ChatBubble from './ChatBubble';
-import Card from '../../ui/Card';
-import Button from '../../ui/Button';
+import ChatInput from './ChatInput';
+import ChatActions from './ChatActions';
+import CharacterInsightsPanel from './CharacterInsightsPanel'; // Import the CharacterInsightsPanel component
 
-export default function ChatInterface() {
-  const { persona, messages, isTyping, sendMessage, debateMode, setDebateMode } = useChat();
-  const endRef = useRef<HTMLDivElement | null>(null);
+/**
+ * --------------------------------------------------------------------------
+ * Utilities
+ * --------------------------------------------------------------------------
+ */
 
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages.length, isTyping]);
+// Fallback avatar generator (ui-avatars with random background)
+const generateFallbackAvatar = (name: string) =>
+  `https://ui-avatars.com/api/?name=${encodeURIComponent(
+    name,
+  )}&background=random`;
 
-  if (!persona) return null;
+/**
+ * Returns a “safe” avatar URL.
+ * – Rejects obvious placeholders like `example.com/*`
+ * – Falls back to the ui-avatar generator when URL is missing/invalid
+ */
+const getSafeAvatarUrl = (name: string, url?: string | null) => {
+  if (!url) return generateFallbackAvatar(name);
+
+  try {
+    const { hostname } = new URL(url);
+    // Treat `example.com` (and localhost placeholders) as invalid
+    if (
+      hostname === 'example.com' ||
+      hostname.endsWith('.example.com') ||
+      hostname === 'localhost'
+    ) {
+      return generateFallbackAvatar(name);
+    }
+    return url;
+  } catch {
+    // Malformed URL → fallback
+    return generateFallbackAvatar(name);
+  }
+};
+
+const ChatInterface: React.FC = () => {
+  const { 
+    character, 
+    messages, 
+    isLoading, 
+    error, 
+    isTyping, 
+    retryLastMessage,
+    resetChat
+  } = useChat();
+
+  // State to track whether the insights panel is open
+  const [showInsightsPanel, setShowInsightsPanel] = useState(false);
+
+  // Reference for auto-scrolling to the bottom of the chat
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Detect if this is a resumed chat (there are already messages present)
+  const isResumed = messages.length > 0;
+
+  // Auto-scroll to bottom when messages change or when typing
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages.length, isTyping]); // key on length so first load scrolls too
+
+  // Log resume information for debugging
+  useEffect(() => {
+    if (isResumed) {
+      // eslint-disable-next-line no-console
+      console.info('[ChatInterface] Rendering a resumed conversation');
+    }
+  }, [isResumed]);
+
+  // If no character is selected, show a placeholder
+  if (!character) {
+    return (
+      <div className="flex h-full w-full flex-col items-center justify-center bg-gray-50 p-4">
+        <div className="text-center">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className="h-16 w-16 mx-auto text-gray-400 mb-4" 
+            fill="none" 
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={1.5} 
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" 
+            />
+          </svg>
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">
+            Start a Conversation
+          </h3>
+          <p className="text-gray-500 max-w-sm">
+            Select an assistant from the list to begin your conversation.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="lg:grid lg:grid-cols-[2fr_1fr] lg:gap-6">
-    {/* Main chat area */}
-    <Card className="backdrop-blur-lg bg-navy-800/70">
-      <div className="flex items-center justify-between mb-4">
+    <div className="flex h-full w-full flex-col bg-white">
+      {/* Chat Header */}
+      <header className="flex items-center border-b border-gray-200 bg-white p-4 shadow-sm">
+        {/* Back to Characters button */}
+        <button
+          onClick={resetChat}
+          className="mr-3 flex items-center rounded-md bg-gray-100 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200 transition-colors"
+          aria-label="Back to characters"
+          title="Back to characters"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back
+        </button>
+        
         <div className="flex items-center">
-          <div className="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-white font-bold">CK</div>
-          <h2 className="ml-3 text-xl font-extrabold text-white">
-            Chat with {persona.name}
-            <span className="block h-0.5 w-full bg-gradient-to-r from-brand-red via-brand-gold to-brand-blue mt-1" />
-            {/* patriotic accent stripe */}
-            <div className="accent-tricolor rounded-full mt-1" style={{ height: '2px' }} />
-          </h2>
+          {/*
+            ----------------------------------------------------------------
+            Unified avatar handling with robust fallback
+            ----------------------------------------------------------------
+          */}
+          <img
+            src={getSafeAvatarUrl(character.name, character.avatar_url)}
+            alt={character.name}
+            className="h-10 w-10 rounded-full object-cover border border-gray-200 mr-3"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = generateFallbackAvatar(
+                character.name,
+              );
+            }}
+          />
+          <div>
+            <div className="flex items-center">
+              <h2 className="text-lg font-semibold text-gray-900">{character.name}</h2>
+              {isResumed && (
+                <span className="ml-2 rounded-full bg-primary-100 px-2 py-0.5 text-xs font-medium text-primary-600">
+                  Resumed
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-gray-500 line-clamp-1">{character.description}</p>
+          </div>
         </div>
-        <div className="flex rounded-full overflow-hidden border border-brand-blue/50" role="group" aria-label="Mode toggle">
-          <Button
-            size="sm"
-            variant={debateMode === 'Debate' ? 'primary' : 'ghost'}
-            aria-pressed={debateMode === 'Debate'}
-            onClick={() => setDebateMode('Debate')}
-          >
-            Debate
-          </Button>
-          <Button
-            size="sm"
-            variant={debateMode === 'Lecture' ? 'primary' : 'ghost'}
-            aria-pressed={debateMode === 'Lecture'}
-            onClick={() => setDebateMode('Lecture')}
-          >
-            Lecture
-          </Button>
-        </div>
+        
+        {/* Insights Panel Toggle Button */}
+        <button
+          onClick={() => setShowInsightsPanel(!showInsightsPanel)}
+          className="ml-auto mr-3 flex items-center rounded-md bg-gray-100 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200 transition-colors"
+          aria-label="Toggle character insights"
+          title="Toggle character insights"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Insights
+        </button>
+
+        <button 
+          onClick={resetChat}
+          className="flex items-center rounded-md bg-gray-100 px-3 py-1 text-sm text-gray-700 hover:bg-gray-200 transition-colors"
+          aria-label="End conversation"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          End Chat
+        </button>
+      </header>
+
+      {/* Chat Messages */}
+      <div className="flex-grow overflow-y-auto p-4">
+        {messages.length === 0 ? (
+          <div className="flex h-full w-full items-center justify-center">
+            <div className="text-center max-w-md">
+              <p className="text-gray-500 mb-4">
+                Start your conversation with {character.name}. Ask questions about their life, experiences, or seek their wisdom.
+              </p>
+              <div className="text-sm text-gray-400 italic">
+                "Ask me anything..."
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Message bubbles */}
+            {messages
+              .filter((m) => m.content && m.content.trim() !== '')
+              .map((message) => (
+              <ChatBubble
+                key={message.id}
+                message={message}
+                characterName={character.name}
+                characterAvatar={character.avatar_url}
+                isTyping={isTyping && message === messages[messages.length - 1] && message.role === 'assistant' && message.content === ''}
+              />
+            ))}
+            
+            {/* Typing indicator */}
+            {isTyping && messages.length > 0 && messages[messages.length - 1].role === 'user' && (
+              <div className="flex items-center mb-4">
+                <div className="flex-shrink-0 mr-2">
+                  <img
+                    src={getSafeAvatarUrl(character.name, character.avatar_url)}
+                    alt={character.name}
+                    className="h-10 w-10 rounded-full object-cover border border-gray-200"
+                  />
+                </div>
+                <div className="text-sm text-gray-500">
+                  {character.name} is responding...
+                </div>
+              </div>
+            )}
+            
+            {/* Error message with retry button */}
+            {error && (
+              <div className="mx-auto my-4 max-w-md rounded-lg bg-red-50 p-4">
+                <div className="flex">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <div>
+                    <p className="text-sm text-red-800">
+                      Sorry, something went wrong. Please try again.
+                    </p>
+                    <button
+                      onClick={retryLastMessage}
+                      className="mt-2 rounded-md bg-red-600 px-3 py-1 text-xs font-medium text-white hover:bg-red-700 transition-colors"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+        
+        {/* Invisible element to scroll to */}
+        <div ref={messagesEndRef} />
       </div>
 
-      <div className="space-y-4 mb-4">
-        {messages.filter(m => m.role !== 'system').map((m) => (
-          <ChatBubble key={m.id} role={m.role as 'user'|'assistant'} content={m.content} />
-        ))}
-        {isTyping && <div className="text-white/70 text-sm">{persona.name} is typing…</div>}
-        <div ref={endRef} />
-      </div>
+      {/* Character Insights Panel */}
+      <CharacterInsightsPanel
+        character={character}
+        isOpen={showInsightsPanel}
+        onClose={() => setShowInsightsPanel(false)}
+      />
 
-      <ChatInput onSend={(t) => sendMessage(t)} disabled={isTyping} />
-    </Card>
+      {/* Chat actions (save / favorite / delete etc.) */}
+      {/* Rendered above the input so actions are always accessible */}
+      {/* Compact mode is false here to show the full toolbar */}
+      <ChatActions />
 
-    {/* Side panel (hidden on small screens) */}
-    <Card
-      className="hidden lg:block navy-panel h-fit backdrop-blur-md"
-      aria-label="Sources and outline panel"
-    >
-      <h3 className="text-lg font-bold mb-2 faith-heading">Sources &amp; Outline</h3>
-      <p className="text-sm text-white/70">
-        Relevant references and a structured outline will appear here once
-        available.
-      </p>
-    </Card>
+      {/* Chat Input */}
+      <ChatInput 
+        disabled={isLoading} 
+        placeholder={`Ask ${character.name} anything...`}
+      />
     </div>
   );
-}
+};
+
+export default ChatInterface;

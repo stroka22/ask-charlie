@@ -1,6 +1,64 @@
 {
+  "buildCommand": "vite build",
+  "framework": "vite", 
+  "outputDirectory": "dist",
+  "github": {
+    "silent": true
+  },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/" }
-  ]
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/test-static-serving.html",
+      "destination": "/test-static-serving.html"
+    },
+    {
+      "source": "/pricing.html",
+      "destination": "/pricing.html"
+    },
+    {
+      "source": "/(.*).css",
+      "destination": "/$1.css"
+    },
+    {
+      "source": "/(.*).js",
+      "destination": "/$1.js"
+    },
+    {
+      "source": "/(.*).png",
+      "destination": "/$1.png"
+    },
+    {
+      "source": "/(.*).jpg",
+      "destination": "/$1.jpg"
+    },
+    {
+      "source": "/(.*).svg",
+      "destination": "/$1.svg"
+    },
+    {
+      "source": "/(.*).ico",
+      "destination": "/$1.ico"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*).html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }

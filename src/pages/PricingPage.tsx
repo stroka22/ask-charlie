@@ -1,0 +1,366 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js'; // Import loadStripe
+import { useAuth } from '../contexts/AuthContext';
+import {
+  getPublicKey,
+  createCheckoutSession,
+  SUBSCRIPTION_PRICES,
+  testStripeConfiguration,
+} from '../services/stripe'; // Import necessary Stripe functions
+import Footer from '../components/Footer'; // ← NEW
+
+// Initialize Stripe outside of component render to avoid re-creating it
+const stripePromise = loadStripe(getPublicKey());
+
+// Log Stripe initialization attempt
+console.log('Initializing Stripe with public key:', getPublicKey() ? '[VALID KEY]' : '[MISSING KEY]');
+stripePromise.then(stripe => {
+  console.log('Stripe loaded successfully:', !!stripe);
+}).catch(err => {
+  console.error('Failed to load Stripe:', err);
+});
+
+const PricingPage: React.FC = () => {
+  const { user } = useAuth();
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly'); // State for billing period
+  const location = useLocation();
+  const navigate = useNavigate();
+  const checkoutTriggered = useRef(false); // guard to avoid double-fire
+  const [errMsg, setErrMsg] = useState<string | null>(null);
+  const [isCheckoutInProgress, setIsCheckoutInProgress] = useState(false);
+  const [stripeLoaded, setStripeLoaded] = useState<boolean | null>(null);
+  // Dev-only Stripe config test state
+  const [testingConfig, setTestingConfig] = useState(false);
+  const [configResult, setConfigResult] = useState<any | null>(null);
+
+  // Determine the price based on the selected billing period
+  const selectedPriceId = billingPeriod === 'monthly' ? SUBSCRIPTION_PRICES.MONTHLY : SUBSCRIPTION_PRICES.YEARLY;
+  const displayPrice = billingPeriod === 'monthly' ? '$9.97' : '$97.97';
+  const displayPeriod = billingPeriod === 'monthly' ? '/month' : '/year';
+
+  // Check if Stripe is loaded when component mounts
+  useEffect(() => {
+    const checkStripeLoaded = async () => {
+      try {
+        const stripe = await stripePromise;
+        setStripeLoaded(!!stripe);
+        console.log('Stripe loaded status:', !!stripe);
+      } catch (error) {
+        console.error('Error checking Stripe loaded status:', error);
+        setStripeLoaded(false);
+      }
+    };
+    
+    checkStripeLoaded();
+  }, []);
+
+  // Handle redirection if user isn't logged in
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const wantsCheckout = params.get('checkout') === 'true';
+    
+    // If checkout is requested but user isn't logged in, redirect to login
+    if (wantsCheckout && !user && !checkoutTriggered.current) {
+      console.log('Checkout requested but user not logged in, redirecting to login');
+      checkoutTriggered.current = true; // Prevent infinite redirects
+      navigate('/login?redirect=pricing&checkout=true&period=' + billingPeriod);
+    }
+  }, [user, location.search, billingPeriod, navigate]);
+
+  /* ------------------------------------------------------------------
+     Dev-only helpers
+  ------------------------------------------------------------------ */
+  const handleTestConfig = async () => {
+    setTestingConfig(true);
+    setConfigResult(null);
+    try {
+      const result = await testStripeConfiguration();
+      setConfigResult(result);
+    } catch (error) {
+      console.error('Stripe configuration test failed:', error);
+      setConfigResult({ success: false, error: error instanceof Error ? error.message : String(error) });
+    } finally {
+      setTestingConfig(false);
+    }
+  };
+
+  const handleCheckout = async () => {
+    console.log('Starting checkout process...');
+    console.log('User:', user ? 'Logged in' : 'Not logged in');
+    console.log('Selected price ID:', selectedPriceId);
+    
+    if (isCheckoutInProgress) {
+      console.log('Checkout already in progress, ignoring request');
+      return;
+    }
+    
+    try {
+      setIsCheckoutInProgress(true);
+      setErrMsg(null);
+      
+      const stripe = await stripePromise;
+      if (!stripe) {
+        console.error('Stripe.js failed to load');
+        setErrMsg('Payment system unavailable. Please try again later.');
+        throw new Error('Stripe.js failed to load.');
+      }
+
+      if (!user) {
+        console.log('No user found, redirecting to login');
+        navigate('/login?redirect=pricing&checkout=true&period=' + billingPeriod);
+        return;
+      }
+
+      console.log('Creating checkout session with:', {
+        priceId: selectedPriceId,
+        customerId: user.id,
+        email: user.email
+      });
+      
+      const session = await createCheckoutSession({
+        priceId: selectedPriceId,
+        successUrl: window.location.origin + '/conversations?checkout=success', // Redirect to conversations on success
+        cancelUrl: window.location.origin + '/pricing?checkout=canceled', // Return to pricing on cancel
+        customerId: user.id, // Pass Supabase user ID as customer ID
+        customerEmail: user.email, // Pass user email
+        metadata: {
+          userId: user.id, // Store user ID in metadata for webhook
+        },
+      });
+
+      console.log('Checkout session created:', session.id);
+      
+      // Redirect to Stripe Checkout
+      console.log('Redirecting to Stripe Checkout...');
+      const { error } = await stripe.redirectToCheckout({ sessionId: session.id });
+
+      if (error) {
+        console.error('Stripe Checkout Error:', error);
+        setErrMsg(`Stripe redirect error: ${error.message}`);
+      }
+    } catch (error) {
+      console.error('Checkout initiation failed:', error);
+      setErrMsg(
+        `Failed to initiate checkout. ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
+      );
+    } finally {
+      setIsCheckoutInProgress(false);
+    }
+  };
+
+  /* ------------------------------------------------------------------
+     Read URL parameters for deep-link checkout
+     e.g. /pricing?checkout=true&period=yearly
+  ------------------------------------------------------------------ */
+  useEffect(() => {
+    console.log('Processing URL parameters...');
+    console.log('Current location:', location.search);
+    console.log('User status:', user ? 'Logged in' : 'Not logged in');
+    
+    const params = new URLSearchParams(location.search);
+    const period = params.get('period');
+    const wantsCheckout = params.get('checkout') === 'true';
+    
+    console.log('URL parameters:', { period, wantsCheckout });
+
+    // Set billing period based on URL parameter
+    if (period === 'yearly') {
+      console.log('Setting billing period to yearly');
+      setBillingPeriod('yearly');
+    }
+
+    // Initiate checkout if requested and not already triggered
+    if (wantsCheckout && !checkoutTriggered.current && user && stripeLoaded) {
+      console.log('Auto-initiating checkout from URL parameters');
+      checkoutTriggered.current = true; // ensure single attempt
+      handleCheckout();
+    }
+  }, [location.search, user, stripeLoaded, billingPeriod]); // Include proper dependencies
+
+  // Reset checkout triggered flag when location changes
+  useEffect(() => {
+    return () => {
+      checkoutTriggered.current = false;
+    };
+  }, [location.pathname]);
+
+  const freeFeatures = [
+    'Limited assistant selection',
+    '5 messages per conversation',
+    'Basic categories only',
+    'English language support',
+    'No conversation saving',
+  ];
+
+  const premiumFeatures = [
+    'Full assistant library',
+    'Unlimited conversation length',
+    'All categories and perspectives',
+    'Multi-language support',
+    'Save and export conversations',
+    'Voice input/output',
+    'Ad-free experience',
+  ];
+
+  return (
+    <>
+      {/* pt-32 offsets fixed banner (~64 px) + sticky header (~64 px) so content
+          starts fully below both elements on all screens */}
+      <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 pt-32">
+      {/* Subtle background highlight */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-300/20 via-transparent to-transparent opacity-20"></div>
+      </div>
+
+      <div className="relative z-10 max-w-4xl mx-auto text-center">
+        <h1 className="text-5xl font-extrabold text-white tracking-tight drop-shadow-lg mb-4" style={{ fontFamily: 'inherit' }}>
+          Choose Your Plan
+        </h1>
+        <p className="text-blue-100 text-xl mb-12 max-w-2xl mx-auto">
+          Unlock more capacity and controls with Premium.
+        </p>
+
+        {/* Billing Period Toggle */}
+        <div className="mb-8 flex justify-center">
+          <div className="inline-flex rounded-full bg-white/20 backdrop-blur-sm p-1 shadow-lg">
+            <button
+              onClick={() => setBillingPeriod('monthly')}
+              className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${
+                billingPeriod === 'monthly'
+                  ? 'bg-cyan-400 text-gray-900 shadow-md'
+                  : 'text-white hover:bg-white/10'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingPeriod('yearly')}
+              className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${
+                billingPeriod === 'yearly'
+                  ? 'bg-cyan-400 text-gray-900 shadow-md'
+                  : 'text-white hover:bg-white/10'
+              }`}
+            >
+              Yearly (Save 17%)
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Free Tier Card */}
+          <div className="bg-white/10 backdrop-blur-md rounded-xl p-8 shadow-xl border border-white/20 flex flex-col">
+            <h2 className="text-3xl font-bold text-cyan-300 mb-4" style={{ fontFamily: 'inherit' }}>
+              Free
+            </h2>
+            <p className="text-white/80 text-lg mb-6">Get started with core features</p>
+            <div className="text-white text-5xl font-extrabold mb-6">
+              $0<span className="text-xl font-medium">/month</span>
+            </div>
+            <ul className="text-white/90 text-left space-y-3 flex-grow mb-8">
+              {freeFeatures.map((feature, index) => (
+                <li key={index} className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+            {errMsg && (
+              <div className="mb-4 rounded bg-red-100 text-red-700 p-3 text-sm">
+                {errMsg}
+              </div>
+            )}
+            <button
+              onClick={() => alert('You are already on the Free plan!')}
+              className="w-full bg-white/20 text-white py-3 rounded-lg font-semibold text-lg hover:bg-white/30 transition-all"
+            >
+              Current Plan
+            </button>
+          </div>
+
+          {/* Premium Tier Card */}
+          <div className="bg-white/20 backdrop-blur-md rounded-xl p-8 shadow-2xl border border-cyan-300 flex flex-col transform scale-105">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-cyan-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold shadow-md">
+              Most Popular
+            </div>
+            <h2 className="text-3xl font-bold text-cyan-300 mb-4 mt-4" style={{ fontFamily: 'inherit' }}>
+              Premium
+            </h2>
+            <p className="text-white/80 text-lg mb-6">Unlock the full platform</p>
+            <div className="text-white text-5xl font-extrabold mb-6">
+              {displayPrice}<span className="text-xl font-medium">{displayPeriod}</span>
+            </div>
+            <ul className="text-white/90 text-left space-y-3 flex-grow mb-8">
+              {premiumFeatures.map((feature, index) => (
+                <li key={index} className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-cyan-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  {feature}
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={handleCheckout}
+              disabled={isCheckoutInProgress}
+              className={`w-full ${isCheckoutInProgress ? 'bg-cyan-400' : 'bg-cyan-400 hover:bg-cyan-300'} text-gray-900 py-3 rounded-lg font-bold text-lg transition-all shadow-lg`}
+            >
+              {isCheckoutInProgress ? 'Processing...' : 'Upgrade to Premium'}
+            </button>
+            
+            {/* Manual test button for developers */}
+            {process.env.NODE_ENV === 'development' && (
+              <button
+                onClick={() => {
+                  checkoutTriggered.current = false;
+                  handleCheckout();
+                }}
+                className="mt-4 w-full bg-purple-500 text-white py-2 rounded-lg font-medium text-sm hover:bg-purple-600 transition-all"
+              >
+                Test Checkout (Dev Only)
+              </button>
+            )}
+
+            {/* Stripe configuration diagnostic (dev only) */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-6 w-full text-left">
+                <button
+                  onClick={handleTestConfig}
+                  disabled={testingConfig}
+                  className={`w-full ${
+                    testingConfig ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-600'
+                  } text-white py-2 rounded-lg font-medium text-sm transition-all`}
+                >
+                  {testingConfig ? 'Testing Configuration...' : 'Test Stripe Configuration'}
+                </button>
+                {configResult && (
+                  <pre className="mt-3 text-xs bg-black/30 text-white p-2 rounded overflow-x-auto">
+                    {JSON.stringify(configResult, null, 2)}
+                  </pre>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <p className="mt-12 text-indigo-200 text-sm">
+          All plans include access to the core chat engine and basic assistant interactions.
+        </p>
+        <p className="mt-2 text-blue-200 text-sm">
+          <Link to="/" className="text-cyan-300 hover:underline">
+            Return to Chat
+          </Link>
+        </p>
+      </div>
+      </div>
+      {/* Site footer */}
+      <Footer />
+    </>
+  );
+};
+
+export default PricingPage;

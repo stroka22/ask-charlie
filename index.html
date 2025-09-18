@@ -1,26 +1,63 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Patriotic & faith-oriented branding -->
-    <meta
-      name="description"
-      content="Ask Charlie — Debate Charlie Kirk in a patriotic, faith-inspired chat experience."
-    />
-    <title>Ask Charlie — Debate Charlie Kirk</title>
-
-    <!-- Manrope font for refreshed typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400..800&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Bot360AI — Build AI-driven conversational experiences for your audience.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <meta name="theme-color" content="#111827">
+  <title>Bot360AI</title>
+  
+  <!-- Base styles to ensure proper React mounting -->
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    #root {
+      height: 100%;
+      width: 100%;
+    }
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #111827;
+      color: white;
+      flex-direction: column;
+    }
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #22d3ee;
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 20px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+  
+  <!-- Prevent service worker issues -->
+  <script id="sw-cleanup" src="/service-worker-cleanup.js"></script>
+</head>
+<body>
+  <!-- React will mount here -->
+  <div id="root">
+    <!-- Fallback loading state while React loads -->
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <h2 style="color: #22d3ee;">Loading Bot360AI...</h2>
+    </div>
+  </div>
+  
+  <!-- React application entry point -->
+  <script type="module" src="/src/main.tsx"></script>
+</body>
 </html>
