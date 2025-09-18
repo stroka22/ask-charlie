@@ -339,6 +339,13 @@ export default function AdminPage() {
           <a
             href="/admin/superadmin"
             className="inline-flex items-center px-4 py-2 rounded-md bg-amber-100 text-amber-800 border border-amber-200 hover:bg-amber-200"
+            style={{
+              backgroundColor: '#fde68a',
+              color: '#92400e',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              display: 'inline-flex',
+            }}
           >
             Superadmin: Manage Users &amp; Organizations
           </a>
