@@ -18,7 +18,7 @@ const HowItWorksPage = () => {
               Getting Started
             </h1>
             <p className="text-indigo-100 mb-6">
-              Pick an opponent, present your case, and save your journey
+              Pick an opponent, present your case, and Save Your History
               in&nbsp;
               <span className="text-cyan-300 font-semibold">My&nbsp;Debates</span>.
             </p>
