@@ -55,45 +55,24 @@ const Bot360Logo = ({
         className="relative mr-2 flex-shrink-0"
         style={{ height: sizeValues.iconSize, width: sizeValues.iconSize }}
       >
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 100 100"
-          height={sizeValues.iconSize} 
+          height={sizeValues.iconSize}
           width={sizeValues.iconSize}
-          fill="none"
-          stroke={colors[variant].orbital}
-          strokeWidth="4"
           className="transition-colors duration-300"
         >
-          {/* Outer Circle */}
-          <circle cx="50" cy="50" r="45" />
-          
-          {/* Orbital Rings */}
-          <ellipse 
-            cx="50" 
-            cy="50" 
-            rx="35" 
-            ry="20" 
-            transform="rotate(30 50 50)" 
-            strokeDasharray="4 2"
-          />
-          <ellipse 
-            cx="50" 
-            cy="50" 
-            rx="30" 
-            ry="40" 
-            transform="rotate(-20 50 50)" 
-            strokeDasharray="4 2"
-          />
-          
-          {/* Center Dot */}
-          <circle 
-            cx="50" 
-            cy="50" 
-            r="6" 
-            fill={colors[variant].ai} 
-            stroke="none"
-          />
+          {/* Base Cross – Blue */}
+          <rect x="37" y="15" width="26" height="70" rx="8" fill="#1e3a8a" />
+          <rect x="15" y="37" width="70" height="26" rx="8" fill="#1e3a8a" />
+
+          {/* Middle Cross – White */}
+          <rect x="41" y="21" width="18" height="58" rx="6" fill="#ffffff" />
+          <rect x="21" y="41" width="58" height="18" rx="6" fill="#ffffff" />
+
+          {/* Inner Cross – Red */}
+          <rect x="45" y="27" width="10" height="46" rx="4" fill="#ef4444" />
+          <rect x="27" y="45" width="46" height="10" rx="4" fill="#ef4444" />
         </svg>
       </div>
 

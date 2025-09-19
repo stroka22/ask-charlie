@@ -456,7 +456,7 @@ const Header = () => {
       </div>
 
       {/* Patriotic stripe */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-red-600 via-white to-blue-600"></div>
+      <div className="h-0.5 w-full bg-gradient-to-r from-red-500 via-white to-blue-600"></div>
     </header>
   );
 };
