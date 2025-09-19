@@ -1,12 +1,9 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <rect width="512" height="512" fill="none"/>
   
-  <!-- Christian flag motif -->
-  <!-- White field -->
-  <rect x="0" y="0" width="512" height="512" fill="#ffffff"/>
-  <!-- Blue canton -->
-  <rect x="64" y="64" width="224" height="176" rx="20" fill="#1e3a8a"/>
-  <!-- Red Latin cross inside canton (brighter red) -->
-  <rect x="168" y="92" width="48" height="120" rx="10" fill="#ff4d4d"/>
-  <rect x="136" y="124" width="112" height="48" rx="10" fill="#ff4d4d"/>
+  <!-- Bold Christian cross -->
+  <!-- Vertical bar -->
+  <rect x="216" y="80" width="80" height="352" rx="24" fill="#ff4d4d"/>
+  <!-- Horizontal bar -->
+  <rect x="120" y="200" width="272" height="112" rx="24" fill="#ff4d4d"/>
 </svg>
