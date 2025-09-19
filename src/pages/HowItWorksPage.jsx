@@ -18,16 +18,16 @@ const HowItWorksPage = () => {
               Getting Started
             </h1>
             <p className="text-indigo-100 mb-6">
-              Pick a leader, ask your questions, and save your journey
+              Pick an opponent, present your case, and save your journey
               in&nbsp;
-              <span className="text-cyan-300 font-semibold">My&nbsp;Conversations</span>.
+              <span className="text-cyan-300 font-semibold">My&nbsp;Debates</span>.
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
                 to="/"
                 className="px-6 py-3 bg-cyan-400 hover:bg-cyan-300 text-gray-900 rounded-lg font-semibold transition-colors text-center"
               >
-                Start a Conversation
+                Start a Debate
               </Link>
               <Link
                 to="/signup"
@@ -52,9 +52,9 @@ const HowItWorksPage = () => {
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                 <div className="flex-shrink-0 w-16 h-16 rounded-full bg-cyan-400 text-gray-900 flex items-center justify-center text-2xl font-bold">1</div>
                 <div>
-                  <h3 className="text-xl font-semibold text-cyan-300 mb-2">Choose a Leader</h3>
+                  <h3 className="text-xl font-semibold text-cyan-300 mb-2">Choose an Opponent</h3>
                   <p className="text-indigo-100">
-                    Browse a growing library of leaders covering topics such as language learning, career coaching, tech support, creative writing, and more. Each leader responds using its own profile and knowledge base.
+                    Browse a growing library of opponents covering topics such as language learning, career coaching, tech support, creative writing, and more. Each opponent responds using its own profile and knowledge base.
                   </p>
                 </div>
               </div>
@@ -63,9 +63,9 @@ const HowItWorksPage = () => {
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                 <div className="flex-shrink-0 w-16 h-16 rounded-full bg-cyan-400 text-gray-900 flex items-center justify-center text-2xl font-bold">2</div>
                 <div>
-                  <h3 className="text-xl font-semibold text-cyan-300 mb-2">Ask Questions</h3>
+                  <h3 className="text-xl font-semibold text-cyan-300 mb-2">Opening Statement</h3>
                   <p className="text-indigo-100">
-                    Chat naturally to get advice, explanations, brainstorming help, or just explore a topic. Leaders reply instantly with relevant insights and resources.
+                    Present your opening statement with your position and initial arguments.
                   </p>
                 </div>
               </div>
@@ -74,9 +74,9 @@ const HowItWorksPage = () => {
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                 <div className="flex-shrink-0 w-16 h-16 rounded-full bg-cyan-400 text-gray-900 flex items-center justify-center text-2xl font-bold">3</div>
                 <div>
-                  <h3 className="text-xl font-semibold text-cyan-300 mb-2">Save & Continue Your Journey</h3>
+                  <h3 className="text-xl font-semibold text-cyan-300 mb-2">Rebuttals and Closing</h3>
                   <p className="text-indigo-100">
-                    Save conversations, mark leaders as favourites, and pick up your learning journey any time. Everything lives in <strong>My Conversations</strong> for quick access.
+                    Exchange rebuttals, deliver your closing statement, and save everything in <strong>My Debates</strong> for quick access.
                   </p>
                 </div>
               </div>
@@ -100,10 +100,10 @@ const HowItWorksPage = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-cyan-300">
-                    Leader Conversations
+                    Opponent Debates
                   </h3>
                   <p className="text-indigo-100 text-sm">
-                    One-on-one dialogue with AI leaders grounded in their provided context.
+                    One-on-one debates with AI opponents grounded in their provided context.
                   </p>
                 </div>
               </div>
@@ -145,10 +145,10 @@ const HowItWorksPage = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-cyan-300">
-                    Conversation Sharing
+                    Debate Sharing
                   </h3>
                   <p className="text-indigo-100 text-sm">
-                    Share conversations with others via unique links for group reflection.
+                    Share debates with others via unique links for group reflection.
                   </p>
                 </div>
               </div>
@@ -163,7 +163,7 @@ const HowItWorksPage = () => {
                     Favorites &amp; History
                   </h3>
                   <p className="text-indigo-100 text-sm">
-                    Save favorites and revisit previous conversations anytime.
+                    Save favorites and revisit previous debates anytime.
                   </p>
                 </div>
               </div>
@@ -178,7 +178,7 @@ const HowItWorksPage = () => {
                     References &amp; Sources
                   </h3>
                   <p className="text-indigo-100 text-sm">
-                    Leaders can cite sources and links for deeper exploration.
+                    Opponents can cite sources and links for deeper exploration.
                   </p>
                 </div>
               </div>
@@ -210,7 +210,7 @@ const HowItWorksPage = () => {
                 to="/" 
                 className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-semibold transition-colors"
               >
-                Browse Leaders
+                Browse Opponents
               </Link>
             </div>
           </div>

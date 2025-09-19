@@ -81,7 +81,7 @@ const HomePage: React.FC = () => {
         }
         className="fixed top-4 right-4 z-50 inline-flex justify-center items-center px-6 py-2 border-2 border-white text-sm font-medium rounded-full shadow-sm text-white bg-red-400 hover:bg-red-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300 whitespace-nowrap transition-colors animate-pulse"
       >
-        Unlock All Leaders – Upgrade to Premium
+        Unlock All Opponents/Features – Upgrade to Premium
       </button>
 
       {character ? (
@@ -138,7 +138,7 @@ const HomePage: React.FC = () => {
       {/* Debug notice for resumed chats */}
       {resumed && (
         <div className="fixed bottom-2 left-2 z-50 rounded-md bg-blue-100 px-3 py-1 text-xs text-blue-800 shadow">
-          Resumed conversation {chatId ? `(ID: ${chatId})` : '(local)'}
+          Resumed debate {chatId ? `(ID: ${chatId})` : '(local)'}
         </div>
       )}
     </>

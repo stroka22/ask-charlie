@@ -624,7 +624,7 @@ const ChatInterfaceWithConversations = () => {
                                                 }),
                                                 _jsxs("div", { 
                                                         className: "text-sm text-white/80",
-                                                    children: [character.name, " is responding..."] 
+                                                    children: [character.name, " is preparing a rebuttal..."] 
                                                 })
                                             ] 
                                         })

@@ -82,7 +82,7 @@ const ScalableCharacterSelection: React.FC = () => {
       setFeaturedCharacter(jesus || (data.length > 0 ? data[0] : null));
     } catch (err) {
       console.error('Failed to fetch characters:', err);
-      setError('Failed to load leaders. Please try again later.');
+      setError('Failed to load opponents. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -311,7 +311,7 @@ const ScalableCharacterSelection: React.FC = () => {
                 : 'bg-white/10 text-white hover:bg-white/20'}
             `}
           >
-            {selectedCharacter?.id === character.id ? 'Continue' : 'Chat'}
+            {selectedCharacter?.id === character.id ? 'Continue' : 'Debate'}
           </button>
         </div>
       );
@@ -475,7 +475,7 @@ const ScalableCharacterSelection: React.FC = () => {
             <div className="absolute inset-0 rounded-full bg-cyan-300 blur-xl opacity-30 animate-pulse"></div>
             <div className="relative h-16 w-16 mx-auto animate-spin rounded-full border-4 border-cyan-200 border-t-cyan-400"></div>
           </div>
-          <p className="text-white text-lg font-light">Loading assistants...</p>
+          <p className="text-white text-lg font-light">Loading opponents...</p>
         </div>
       </div>
     );
@@ -509,7 +509,7 @@ const ScalableCharacterSelection: React.FC = () => {
       
       <div className="max-w-7xl mx-auto bg-white/8 backdrop-blur-sm rounded-2xl p-6 border border-white/15 shadow-xl">
         <h1 className="text-4xl md:text-5xl font-extrabold text-center text-white mb-8 tracking-tight drop-shadow-lg">
-          Choose Your Leader
+          Choose Your Opponent
         </h1>
         
         {/* Featured Character Section */}
@@ -549,7 +549,7 @@ const ScalableCharacterSelection: React.FC = () => {
               onClick={() => handleSelectCharacter(featuredCharacter.id)}
               className="bg-cyan-500 hover:bg-cyan-600 text-indigo-900 font-bold py-3 px-8 rounded-full shadow-lg transform transition-all hover:scale-105 active:scale-95"
             >
-              Start chat with {featuredCharacter.name}
+              Start debate with {featuredCharacter.name}
             </button>
             
             <p className="mt-6 text-blue-100 text-sm">Or select another character below</p>
@@ -563,7 +563,7 @@ const ScalableCharacterSelection: React.FC = () => {
             <div className="w-full md:flex-1">
               <input
                 type="text"
-                placeholder="Search characters..."
+                placeholder="Search opponents..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -729,7 +729,7 @@ const ScalableCharacterSelection: React.FC = () => {
         
         {/* Results count */}
         <div className="text-center text-white/80 mb-6">
-          Showing {paginatedCharacters.length} of {filteredCharacters.length} characters
+          Showing {paginatedCharacters.length} of {filteredCharacters.length} opponents
         </div>
         
         {/* No results message */}
@@ -738,7 +738,7 @@ const ScalableCharacterSelection: React.FC = () => {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-white/50 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <p className="text-xl text-white mb-4">No characters found matching your criteria.</p>
+            <p className="text-xl text-white mb-4">No opponents found matching your criteria.</p>
             <button
               onClick={() => {
                 setTestament('all');

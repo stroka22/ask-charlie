@@ -332,14 +332,14 @@ const SimpleChatWithHistory = () => {
     // Set default conversation title based on character name
     useEffect(() => {
         if (character && !conversationTitle) {
-            setConversationTitle(`Conversation with ${character.name}`);
+            setConversationTitle(`Debate with ${character.name}`);
         }
     }, [character, conversationTitle]);
 
     // Handle saving the conversation
     const handleSaveConversation = () => {
         if (!isAuthenticated) {
-            alert('Please sign in to save conversations');
+            alert('Please sign in to save debates');
             return;
         }
 
@@ -349,19 +349,19 @@ const SimpleChatWithHistory = () => {
         }
 
         if (isChatSaved) {
-            alert('This conversation is already saved');
+            alert('This debate is already saved');
             return;
         }
 
         if (messages.length === 0) {
-            alert('Cannot save an empty conversation');
+            alert('Cannot save an empty debate');
             return;
         }
 
         // If we have a title, save directly, otherwise show dialog
         if (conversationTitle) {
             saveChat(conversationTitle);
-            alert('Conversation saved!');
+            alert('Debate saved!');
         } else {
             setShowSaveDialog(true);
         }
@@ -370,13 +370,13 @@ const SimpleChatWithHistory = () => {
     // Handle submitting the save dialog
     const handleSaveSubmit = () => {
         if (!conversationTitle.trim()) {
-            alert('Please enter a title for your conversation');
+            alert('Please enter a title for your debate');
             return;
         }
 
         saveChat(conversationTitle);
         setShowSaveDialog(false);
-        alert('Conversation saved!');
+        alert('Debate saved!');
     };
 
     // Navigate to conversations page
@@ -432,11 +432,11 @@ const SimpleChatWithHistory = () => {
                                     }),
                                     _jsx("h3", { 
                                         className: "text-xl font-semibold text-cyan-300 mb-2", 
-                                        children: "Start a Conversation" 
+                                        children: "Start a Debate" 
                                     }),
                                     _jsx("p", { 
                                         className: "text-indigo-100 max-w-sm", 
-                                        children: "Select a leader from the list to begin your conversation." 
+                                        children: "Select an opponent from the list to begin your debate." 
                                     })
                                 ] 
                             })
@@ -461,7 +461,7 @@ const SimpleChatWithHistory = () => {
                                                     _jsx(Link, { 
                                                         to: "/", 
                                                         className: "text-gray-300 hover:text-cyan-300", 
-                                                        children: "Leaders" 
+                                                        children: "Opponents" 
                                                     }),
                                                     _jsx("span", { children: ">" }),
                                                     _jsx("span", { 
@@ -477,14 +477,14 @@ const SimpleChatWithHistory = () => {
                                                         _jsx("button", { 
                                                             onClick: goToConversations, 
                                                             className: "text-sm px-3 py-1 rounded bg-[rgba(59,130,246,.15)] border border-cyan-400 hover:bg-cyan-400 hover:text-gray-900 transition",
-                                                            children: "My Conversations" 
+                                                            children: "My Debates" 
                                                         })
                                                     ),
                                                     _jsx("button", { 
                                                         onClick: resetChat, 
                                                         id: "backBtn", 
                                                         className: "text-sm px-3 py-1 rounded bg-[rgba(59,130,246,.15)] border border-cyan-400 hover:bg-cyan-400 hover:text-gray-900 transition",
-                                                        children: "Back to Leaders" 
+                                                        children: "Back to Opponents" 
                                                     })
                                                 ] 
                                             })
@@ -511,12 +511,12 @@ const SimpleChatWithHistory = () => {
                                                             _jsx("h2", { 
                                                                 className: "text-xl font-bold text-cyan-300", 
                                                                 style: { fontFamily: 'inherit' },
-                                                                children: `Chat with ${character.name}` 
+                                                                children: `Debate with ${character.name}` 
                                                             }),
                                                             chatId && (
                                                                 _jsx("div", {
                                                                     className: "text-sm text-indigo-200",
-                                                                    children: "Saved conversation"
+                                                                    children: "Saved debate"
                                                                 })
                                                             )
                                                         ]
@@ -593,8 +593,8 @@ const SimpleChatWithHistory = () => {
                                                         onClick: () => {
                                                             if (navigator.share) {
                                                                 navigator.share({
-                                                                    title: `Chat with ${character.name}`,
-                                                                    text: 'Check out my conversation!',
+                                                                    title: `Debate with ${character.name}`,
+                                                                    text: 'Check out my debate!',
                                                                     url: window.location.href
                                                                 }).catch(err => {
                                                                     console.log('Share failed:', err);
@@ -635,7 +635,7 @@ const SimpleChatWithHistory = () => {
                                                             _jsxs("p", { 
                                                                 className: "text-indigo-100 mb-4", 
                                                                 children: [
-                                                                    "Start your conversation with ", 
+                                                                    "Start your debate with ", 
                                                                     character.name, 
                                                                     ". Ask questions about their life, experiences, or seek their wisdom."
                                                                 ] 
@@ -676,7 +676,7 @@ const SimpleChatWithHistory = () => {
                                                                     }),
                                                                     _jsxs("div", { 
                                                                         className: "text-sm text-indigo-200", 
-                                                                        children: [character.name, " is responding..."] 
+                                                                        children: [character.name, " is preparing a rebuttal..."] 
                                                                     })
                                                                 ] 
                                                             })
@@ -736,7 +736,7 @@ const SimpleChatWithHistory = () => {
                                         children: _jsx(ChatInput, { 
                                             onSendMessage: sendMessage,
                                             disabled: isLoading, 
-                                            placeholder: `Ask ${character.name} anything...`,
+                                            placeholder: `Write your opening statement to ${character.name}...`,
                                             className: "bg-[rgba(255,255,255,.15)] border border-[rgba(255,255,255,.3)] rounded-lg text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/30"
                                         })
                                     }),
@@ -753,17 +753,17 @@ const SimpleChatWithHistory = () => {
                                                 children: [
                                                     _jsx("h3", {
                                                         className: "text-xl font-semibold text-cyan-300 mb-4",
-                                                        children: "Save Conversation"
+                                                        children: "Save Debate"
                                                     }),
                                                     _jsx("p", {
                                                         className: "text-indigo-100 mb-4",
-                                                        children: "Give your conversation a title to save it for later."
+                                                        children: "Give your debate a title to save it for later."
                                                     }),
                                                     _jsx("input", {
                                                         type: "text",
                                                         value: conversationTitle,
                                                         onChange: (e) => setConversationTitle(e.target.value),
-                                                        placeholder: `Conversation with ${character.name}`,
+                                                        placeholder: `Debate with ${character.name}`,
                                                         className: "w-full px-3 py-2 mb-4 bg-[rgba(255,255,255,.1)] border border-[rgba(255,255,255,.2)] rounded-md text-white placeholder-indigo-300 focus:outline-none focus:ring-2 focus:ring-cyan-400"
                                                     }),
                                                     _jsxs("div", {
