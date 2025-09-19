@@ -90,7 +90,13 @@ const TermsPage = () => {
           <div className="bg-white/5 backdrop-blur-md border border-white/15 rounded-xl p-6 mb-8">
             <h2 className="text-xl font-semibold text-cyan-300 mb-4">7. Contact Us</h2>
             <p className="text-blue-100">
-              If you have any questions about these Terms, please contact us at support@faithtalkai.com.
+              If you have any questions about these Terms, please contact us at&nbsp;
+              <a
+                href="mailto:support@debatewithcharlie.com"
+                className="underline hover:text-cyan-200 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+              >
+                support@debatewithcharlie.com
+              </a>.
             </p>
           </div>
           

@@ -9,7 +9,7 @@ const Footer = () => {
   const handleSubscribe = (e) => {
     e.preventDefault();
     if (email) {
-      window.location.href = `mailto:newsletter@bot360.ai?subject=Subscribe&body=Please subscribe me with email: ${email}`;
+      window.location.href = `mailto:newsletter@debatewithcharlie.com?subject=Subscribe&body=Please subscribe me with email: ${email}`;
       setEmail('');
     }
   };

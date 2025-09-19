@@ -16,7 +16,7 @@ const ContactPage = () => {
     const body = `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`;
     
     // Open email client with pre-filled data
-    window.location.href = `mailto:support@faithtalkai.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:support@debatewithcharlie.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
   return (
@@ -37,7 +37,7 @@ const ContactPage = () => {
             
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
               <a 
-                href="mailto:support@faithtalkai.com" 
+                href="mailto:support@debatewithcharlie.com" 
                 className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg text-center transition-colors flex items-center justify-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
