@@ -62,14 +62,11 @@ const Bot360Logo = ({
           width={sizeValues.iconSize}
           className="transition-colors duration-300"
         >
-          {/* Christian flag */}
-          {/* White field */}
-          <rect x="8" y="18" width="84" height="54" rx="6" fill="#ffffff" />
-          {/* Blue canton */}
-          <rect x="8" y="18" width="40" height="32" rx="4" fill="#1e3a8a" />
-          {/* Red Latin cross inside canton */}
-          <rect x="24" y="22" width="8" height="24" rx="2" fill="#ff4d4d" />
-          <rect x="16" y="30" width="24" height="8" rx="2" fill="#ff4d4d" />
+          {/* Gold cross icon */}
+          {/* Vertical bar */}
+          <rect x="45" y="20" width="10" height="60" rx="3" fill="#d4af37" />
+          {/* Horizontal bar (moved above center) */}
+          <rect x="30" y="35" width="40" height="10" rx="3" fill="#d4af37" />
         </svg>
       </div>
 

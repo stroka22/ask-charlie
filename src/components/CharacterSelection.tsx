@@ -447,7 +447,7 @@ const CharacterSelection: React.FC = () => {
       {renderAlphaNav()}
       
       <div className="max-w-7xl mx-auto bg-white/8 backdrop-blur-sm rounded-2xl p-6 border border-white/15 shadow-xl">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-center text-[#0f172a] mb-8 tracking-tight drop-shadow-lg">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-center text-white mb-8 tracking-tight drop-shadow-lg">
           Choose Your Leader
         </h1>
         
