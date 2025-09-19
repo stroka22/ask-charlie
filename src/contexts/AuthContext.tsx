@@ -5,6 +5,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 // TypeScript support.
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../services/supabase';
+import { getActiveSubscription } from '../services/stripe';
+import type { SubscriptionData } from '../services/stripe';
 
 // Define the shape of our auth context
 interface AuthContextType {
@@ -31,6 +33,12 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
   /** Force-refresh Supabase auth session & pull fresh profile */
   refreshSession: () => Promise<void>;
+  /** Stripe subscription (null when none) */
+  subscription: SubscriptionData | null;
+  /** Convenience flag for premium accounts (active or trialing sub) */
+  isPremium: boolean;
+  /** Manually refresh subscription info */
+  refreshSubscription: (uid?: string | null) => Promise<void>;
 }
 
 // Create the context with a default value
@@ -58,6 +66,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [role, setRole] = useState<UserRole>('unknown');
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+  const [isPremium, setIsPremium] = useState<boolean>(false);
 
   /* ------------------------------------------------------------------
    * Debug helpers
@@ -169,6 +179,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(currentSession?.user ?? null);
         if (currentSession?.user) {
           await fetchProfile(currentSession.user.id);
+          await refreshSubscription(currentSession.user.id);
         }
         
         // Set up auth state listener for future changes
@@ -179,9 +190,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
             // when auth state changes, refresh profile
             if (newSession?.user) {
               fetchProfile(newSession.user.id);
+              refreshSubscription(newSession.user.id);
             } else {
               setProfile(null);
               setRole('unknown');
+              setSubscription(null);
+              setIsPremium(false);
             }
           }
         );
@@ -229,6 +243,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // refresh profile after successful login
       if (data?.user) {
         await fetchProfile(data.user.id);
+        await refreshSubscription(data.user.id);
       } else {
         dbgwarn('signIn: Authentication succeeded but no user data returned');
       }
@@ -272,6 +287,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  // Helper – retrieve Stripe subscription & premium flag
+  const refreshSubscription = async (uid: string | undefined | null = user?.id) => {
+    if (!uid) {
+      dbg('refreshSubscription: No user ID provided, clearing subscription state');
+      setSubscription(null);
+      setIsPremium(false);
+      return;
+    }
+    dbg(`refreshSubscription: Checking subscription status for user ID ${uid}`);
+    try {
+      const sub = await getActiveSubscription(uid);
+      setSubscription(sub);
+      const premiumStatus = !!sub && (sub.status === 'active' || sub.status === 'trialing');
+      setIsPremium(premiumStatus);
+      dbg(`refreshSubscription: User premium status: ${premiumStatus ? 'PREMIUM' : 'FREE'}`);
+    } catch (error) {
+      console.error('refreshSubscription: Error fetching subscription:', error);
+      try {
+        const localIsPremium = localStorage.getItem('isPremium') === 'true';
+        setIsPremium(localIsPremium);
+        dbg(`refreshSubscription: Falling back to localStorage isPremium=${localIsPremium}`);
+      } catch (storageError) {
+        console.error('refreshSubscription: Error accessing localStorage:', storageError);
+        setIsPremium(false);
+      }
+    }
+  };
+
   // Sign out
   const signOut = async () => {
     try {
@@ -286,6 +329,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // clear local profile/role
       setProfile(null);
       setRole('unknown');
+      setSubscription(null);
+      setIsPremium(false);
     } catch (error) {
       if (error instanceof Error) {
         setError(error.message);
@@ -346,9 +391,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Pull fresh profile/role
       if (data.session?.user) {
         await fetchProfile(data.session.user.id);
+        await refreshSubscription(data.session.user.id);
       } else {
         setProfile(null);
         setRole('unknown');
+        setSubscription(null);
+        setIsPremium(false);
       }
 
       dbg('refreshSession: Session and profile successfully refreshed');
@@ -428,6 +476,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     updateProfile,
     refreshProfile: fetchProfile,
     refreshSession,
+    subscription,
+    isPremium,
+    refreshSubscription,
   };
 
   // Provide the auth context to children components

@@ -17,8 +17,15 @@ const Header = () => {
   /* ------------------------------------------------------------------
    * Auth state
    * ------------------------------------------------------------------ */
-  const { user, loading, signOut, isAdmin, isPremium: isPremiumUser, role } = useAuth();
-  const isAuthenticated = !!user;
+  const { 
+    user, 
+    loading, 
+    signOut, 
+    isAdmin, 
+    isPremium: isPremiumUser, 
+    role,
+    isAuthenticated,          // provided by AuthContext
+  } = useAuth();
   /* Show Admin link immediately when:
      • user is authenticated AND (we're still loading/role unknown)
        OR we already know the user is admin / superadmin                  */
@@ -171,10 +178,10 @@ const Header = () => {
           ) : isAuthenticated ? (
             /* Desktop: My Walk pill + user dropdown */
             <div className="flex items-center space-x-3">
-              {(isPremiumUser || (isAdmin && isAdmin())) && (
+              {isAuthenticated && (
                 <Link
                   to="/my-walk"
-                  aria-label="My Conversations"
+                  aria-label="My Debates"
                   className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold transition-colors ${
                     isActive('/my-walk')
                       ? 'bg-blue-600 text-white'
@@ -190,7 +197,7 @@ const Header = () => {
                   >
                     <path d="M5 8l.867 1.803L7.5 10.5l-1.633.697L5 13l-.867-1.803L2.5 10.5l1.633-.697L5 8zm5-7l1.286 2.674L14 5l-2.714 1.326L10 9l-1.286-2.674L6 5l2.714-1.326L10 1zm5 9l.75 1.553L17 12l-1.25.447L15 14l-.75-1.553L13 12l1.25-.447L15 10z" />
                   </svg>
-                  My Conversations
+                  My Debates
                 </Link>
               )}
               <div className="relative" ref={menuRef}>
@@ -388,7 +395,7 @@ const Header = () => {
                   </div>
                   <span className="text-white text-sm">{user?.email || 'User'}</span>
                 </div>
-                {(isPremiumUser || (isAdmin && isAdmin())) && (
+                {isAuthenticated && (
                   <Link
                     to="/my-walk"
                     className="block w-full px-3 py-2 mt-3 text-sm font-semibold text-center bg-blue-600 text-white rounded-full hover:bg-blue-500 transition-colors"
@@ -402,7 +409,7 @@ const Header = () => {
                       >
                         <path d="M5 8l.867 1.803L7.5 10.5l-1.633.697L5 13l-.867-1.803L2.5 10.5l1.633-.697L5 8zm5-7l1.286 2.674L14 5l-2.714 1.326L10 9l-1.286-2.674L6 5l2.714-1.326L10 1zm5 9l.75 1.553L17 12l-1.25.447L15 14l-.75-1.553L13 12l1.25-.447L15 10z" />
                       </svg>
-                      My Conversations
+                      My Debates
                     </div>
                   </Link>
                 )}
