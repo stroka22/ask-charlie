@@ -85,7 +85,10 @@ const Footer = () => {
               </a>
             </div>
             <p className="text-gray-300 mb-4">
-              <a href="mailto:support@debatewithcharlie.com" className="hover:text-blue-200 transition-colors">
+              <a
+                href="mailto:support@debatewithcharlie.com"
+                className="inline-block max-w-full break-all md:break-normal hover:text-blue-200 transition-colors"
+              >
                 support@debatewithcharlie.com
               </a>
             </p>
