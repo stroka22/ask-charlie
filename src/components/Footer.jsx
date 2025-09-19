@@ -85,8 +85,8 @@ const Footer = () => {
               </a>
             </div>
             <p className="text-gray-300 mb-4">
-              <a href="mailto:contact@bot360.ai" className="hover:text-blue-200 transition-colors">
-                contact@bot360.ai
+              <a href="mailto:support@debatewithcharlie.com" className="hover:text-blue-200 transition-colors">
+                support@debatewithcharlie.com
               </a>
             </p>
             
