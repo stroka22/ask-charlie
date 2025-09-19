@@ -15,13 +15,13 @@ const Footer = () => {
   };
   
   return (
-    <footer className="bg-blue-950 text-white">
+    <footer className="bg-blue-950 text-white w-full">
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Column */}
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
-            <Bot360Logo variant="light" size="lg" className="mb-4" />
+            <Bot360Logo variant="light" size="lg" className="mb-4 -ml-1" />
             <p className="text-gray-300 mt-4">
               Engage in AI-powered debates and lectures with History's Greatest Thinkers.
             </p>
