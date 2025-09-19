@@ -218,7 +218,7 @@ const ChatInterface: React.FC = () => {
                   />
                 </div>
                 <div className="text-sm text-gray-500">
-                  {character.name} is responding...
+                  {character.name} is preparing a rebuttal...
                 </div>
               </div>
             )}

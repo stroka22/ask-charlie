@@ -293,9 +293,12 @@ function App(): JSX.Element {
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="/conversations" element={<ConversationsPage />} />
       <Route path="/favorites" element={<FavoritesPage />} />
-      <Route path="/my-walk" element={<MyWalkPage />} />
+      <Route path="/my-debates" element={<MyWalkPage />} />
     </Route>
     
+    {/* Legacy route – seamless redirect */}
+    <Route path="/my-walk" element={<Navigate to="/my-debates" replace={true} />} />
+
     {/* Fallback route */}
     <Route path="*" element={<Navigate to="/" replace={true} />} />
     </Routes></main></div>

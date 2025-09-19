@@ -135,7 +135,7 @@ const ScalableCharacterSelection = () => {
             setFeaturedCharacter(character);
             
             // Show confirmation
-            alert(`${character.name} is now your featured assistant!`);
+            alert(`${character.name} is now your featured opponent!`);
         } catch (error) {
             console.error('Error setting featured character:', error);
         }
@@ -221,7 +221,7 @@ const ScalableCharacterSelection = () => {
         }
         catch (err) {
             console.error('Failed to fetch characters:', err);
-            setError('Failed to load assistants. Please try again later.');
+            setError('Failed to load opponents. Please try again later.');
         }
         finally {
             setIsLoading(false);
@@ -527,7 +527,7 @@ const ScalableCharacterSelection = () => {
                                         className: `ml-2 ${isFeatured
                                             ? 'text-cyan-500'
                                             : 'text-gray-400 hover:text-cyan-300'}`,
-                                        title: isFeatured ? "Current featured assistant" : "Set as featured assistant",
+                                        title: isFeatured ? "Current featured opponent" : "Set as featured opponent",
                                         children: _jsx("svg", {
                                             xmlns: "http://www.w3.org/2000/svg",
                                             className: "h-5 w-5",
@@ -568,7 +568,7 @@ const ScalableCharacterSelection = () => {
                                 ? 'bg-cyan-400 text-indigo-900'
                                 : 'bg-white/10 text-white hover:bg-white/20'}
                         `,
-                        children: selectedCharacter?.id === character.id ? 'Continue' : 'Chat',
+                        children: selectedCharacter?.id === character.id ? 'Continue' : 'Debate',
                     }),
                 ],
             }, character?.id || `character-item-${index}`)
@@ -653,7 +653,7 @@ const ScalableCharacterSelection = () => {
     };
     
     if (isLoading) {
-        return (_jsx("div", { className: "flex h-full w-full items-center justify-center bg-gradient-to-b from-[#0b1020] via-[#0f172a] to-[#111827]", children: _jsxs("div", { className: "text-center", children: [_jsxs("div", { className: "relative mb-6", children: [_jsx("div", { className: "absolute inset-0 rounded-full bg-cyan-300 blur-xl opacity-30 animate-pulse" }), _jsx("div", { className: "relative h-16 w-16 mx-auto animate-spin rounded-full border-4 border-cyan-200 border-t-cyan-400" }), _jsx("div", { className: "absolute inset-0 flex items-center justify-center", children: _jsx("span", { className: "text-white text-xl", children: "\•" }) })] }), _jsx("p", { className: "text-white text-lg font-light", style: { fontFamily: 'inherit' }, children: "Loading assistants..." })] }) }));
+        return (_jsx("div", { className: "flex h-full w-full items-center justify-center bg-gradient-to-b from-[#0b1020] via-[#0f172a] to-[#111827]", children: _jsxs("div", { className: "text-center", children: [_jsxs("div", { className: "relative mb-6", children: [_jsx("div", { className: "absolute inset-0 rounded-full bg-cyan-300 blur-xl opacity-30 animate-pulse" }), _jsx("div", { className: "relative h-16 w-16 mx-auto animate-spin rounded-full border-4 border-cyan-200 border-t-cyan-400" }), _jsx("div", { className: "absolute inset-0 flex items-center justify-center", children: _jsx("span", { className: "text-white text-xl", children: "\•" }) })] }), _jsx("p", { className: "text-white text-lg font-light", style: { fontFamily: 'inherit' }, children: "Loading opponents..." })] }) }));
     }
     if (error) {
         return (
@@ -734,7 +734,7 @@ const ScalableCharacterSelection = () => {
                                                 children: [
                                                     _jsx("div", {
                                                         className: "text-cyan-300 text-sm font-medium mb-2",
-                                                        children: "Featured Assistant"
+                                                        children: "Featured Opponent"
                                                     }),
                                                     _jsx("h2", {
                                                         className: "text-3xl md:text-4xl font-bold text-cyan-400 mb-3",
@@ -780,8 +780,8 @@ const ScalableCharacterSelection = () => {
                                                                 : 'bg-gray-400 text-gray-800 hover:bg-gray-500'
                                                         }`,
                                                         children: isPremium || isCharacterFree(featuredCharacter, tierSettings)
-                                                            ? `Chat with ${featuredCharacter.name}`
-                                                            : 'Upgrade to Chat'
+                                                            ? `Debate with ${featuredCharacter.name}`
+                                                            : 'Upgrade to Debate'
                                                     })
                                                 ]
                                             }),
@@ -820,7 +820,7 @@ const ScalableCharacterSelection = () => {
                         _jsx("h1", {
                             className: "text-4xl md:text-5xl font-extrabold text-center text-white mb-8 tracking-tight drop-shadow-lg",
                             style: { fontFamily: 'inherit' },
-                            children: "Choose Your Leader"
+                            children: "Choose Your Opponent"
                         }),
 
                         /* ---------------- CTA Row: Roundtable & Studies ---------- */
@@ -866,7 +866,7 @@ const ScalableCharacterSelection = () => {
                                                 clipRule: "evenodd"
                                             })
                                         }),
-                                        "Explore Studies"
+                                        "Lectures"
                                     ]
                                 })
                             ]
@@ -882,7 +882,7 @@ const ScalableCharacterSelection = () => {
                                         className: "w-full md:flex-1",
                                         children: _jsx("input", {
                                             type: "text",
-                                            placeholder: "Search assistants...",
+                                            placeholder: "Search opponents...",
                                             value: searchQuery,
                                             onChange: (e) => {
                                                 setSearchQuery(e.target.value);
@@ -975,7 +975,7 @@ const ScalableCharacterSelection = () => {
                         /* Character Counter --------------------------------------- */
                         _jsx("div", {
                             className: "text-center text-white/80 mb-6",
-                            children: `Showing ${paginatedCharacters.length} of ${filteredCharacters.length} assistants`
+                            children: `Showing ${paginatedCharacters.length} of ${filteredCharacters.length} opponents`
                         }),
 
                         /* Empty State --------------------------------------------- */
@@ -998,7 +998,7 @@ const ScalableCharacterSelection = () => {
                                 }),
                                 _jsx("p", {
                                     className: "text-xl text-white mb-4",
-                                    children: "No assistants found matching your criteria."
+                                    children: "No opponents found matching your criteria."
                                 }),
                                 _jsx("button", {
                                     onClick: () => {

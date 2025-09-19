@@ -406,7 +406,7 @@ const ChatInterface = () => {
                                                 }),
                                                 _jsxs("div", { 
                                                     className: "text-sm text-blue-200", 
-                                                    children: [character.name, " is responding..."] 
+                                                    children: [character.name, " is preparing a rebuttal..."] 
                                                 })
                                             ] 
                                         })
