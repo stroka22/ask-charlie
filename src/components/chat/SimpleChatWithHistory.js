@@ -436,7 +436,7 @@ const SimpleChatWithHistory = () => {
                                     }),
                                     _jsx("p", { 
                                         className: "text-indigo-100 max-w-sm", 
-                                        children: "Select an assistant from the list to begin your conversation." 
+                                        children: "Select a leader from the list to begin your conversation." 
                                     })
                                 ] 
                             })
@@ -461,7 +461,7 @@ const SimpleChatWithHistory = () => {
                                                     _jsx(Link, { 
                                                         to: "/", 
                                                         className: "text-gray-300 hover:text-cyan-300", 
-                                                        children: "Assistants" 
+                                                        children: "Leaders" 
                                                     }),
                                                     _jsx("span", { children: ">" }),
                                                     _jsx("span", { 
@@ -484,7 +484,7 @@ const SimpleChatWithHistory = () => {
                                                         onClick: resetChat, 
                                                         id: "backBtn", 
                                                         className: "text-sm px-3 py-1 rounded bg-[rgba(59,130,246,.15)] border border-cyan-400 hover:bg-cyan-400 hover:text-gray-900 transition",
-                                                        children: "Back to Assistants" 
+                                                        children: "Back to Leaders" 
                                                     })
                                                 ] 
                                             })

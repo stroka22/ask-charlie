@@ -818,9 +818,9 @@ const ScalableCharacterSelection = () => {
                         /* Title ----------------------------------------------------- */
                         /* Main Heading ------------------------------------------------ */
                         _jsx("h1", {
-                            className: "text-4xl md:text-5xl font-extrabold text-center text-cyan-400 mb-8 tracking-tight drop-shadow-lg",
+                            className: "text-4xl md:text-5xl font-extrabold text-center text-[#0f172a] mb-8 tracking-tight drop-shadow-lg",
                             style: { fontFamily: 'inherit' },
-                            children: "Choose Your Assistant"
+                            children: "Choose Your Leader"
                         }),
 
                         /* ---------------- CTA Row: Roundtable & Studies ---------- */
