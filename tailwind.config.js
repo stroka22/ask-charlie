@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require('tailwindcss/colors');
 module.exports = {
   content: [
     "./index.html",
@@ -8,20 +9,20 @@ module.exports = {
     extend: {
       colors: {
         /* -----------------------------------------------------------------
-           Brand palette: primary (cyan) & secondary (indigo)
+           Brand palette: primary (bright red) & secondary (indigo)
         -----------------------------------------------------------------*/
         primary: {
-          50:  '#ecfeff',
-          100: '#cffafe',
-          200: '#a5f3fc',
-          300: '#67e8f9',
-          400: '#22d3ee', // brand primary
-          500: '#06b6d4',
-          600: '#0891b2',
-          700: '#0e7490',
-          800: '#155e75',
-          900: '#164e63',
-          950: '#083344',
+          50:  '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          300: '#fca5a5',
+          400: '#f87171',
+          500: '#ef4444', // brand primary (brighter red)
+          600: '#dc2626',
+          700: '#b91c1c',
+          800: '#991b1b',
+          900: '#7f1d1d',
+          950: '#450a0a',
         },
         secondary: {
           50:  '#eef2ff',
@@ -43,6 +44,12 @@ module.exports = {
           nodeActive: '#4338ca', // secondary-700
           nodePulse: '#a5b4fc',  // secondary-300
         },
+
+        /* -----------------------------------------------------------------
+           Globally remap all Tailwind `cyan-*` utility classes to blue so
+           existing class names immediately adopt the patriotic palette.
+        -----------------------------------------------------------------*/
+        cyan: colors.blue,
       },
       animation: {
         'typing': 'typing 1.2s steps(3) infinite',

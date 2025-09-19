@@ -476,14 +476,14 @@ const SimpleChatWithHistory = () => {
                                                     isAuthenticated && (
                                                         _jsx("button", { 
                                                             onClick: goToConversations, 
-                                                            className: "text-sm px-3 py-1 rounded bg-[rgba(34,211,238,.15)] border border-cyan-400 hover:bg-cyan-400 hover:text-gray-900 transition",
+                                                            className: "text-sm px-3 py-1 rounded bg-[rgba(59,130,246,.15)] border border-cyan-400 hover:bg-cyan-400 hover:text-gray-900 transition",
                                                             children: "My Conversations" 
                                                         })
                                                     ),
                                                     _jsx("button", { 
                                                         onClick: resetChat, 
                                                         id: "backBtn", 
-                                                        className: "text-sm px-3 py-1 rounded bg-[rgba(34,211,238,.15)] border border-cyan-400 hover:bg-cyan-400 hover:text-gray-900 transition",
+                                                        className: "text-sm px-3 py-1 rounded bg-[rgba(59,130,246,.15)] border border-cyan-400 hover:bg-cyan-400 hover:text-gray-900 transition",
                                                         children: "Back to Assistants" 
                                                     })
                                                 ] 
@@ -549,7 +549,7 @@ const SimpleChatWithHistory = () => {
                                                     isAuthenticated && !isChatSaved && messages.length > 0 && (
                                                         _jsxs("button", {
                                                             onClick: handleSaveConversation,
-                                                            className: "flex items-center gap-1 px-3 py-2 rounded-lg bg-[rgba(34,211,238,.2)] border border-cyan-400 text-cyan-300 font-semibold transition-all hover:bg-cyan-400 hover:text-gray-900",
+                                                            className: "flex items-center gap-1 px-3 py-2 rounded-lg bg-[rgba(59,130,246,.2)] border border-cyan-400 text-cyan-300 font-semibold transition-all hover:bg-cyan-400 hover:text-gray-900",
                                                             children: [
                                                                 _jsx("svg", {
                                                                     xmlns: "http://www.w3.org/2000/svg",
@@ -569,7 +569,7 @@ const SimpleChatWithHistory = () => {
                                                     _jsxs("button", { 
                                                         id: "insightsToggle", 
                                                         onClick: () => setShowInsightsPanel(!showInsightsPanel),
-                                                        className: `insights-toggle-button flex items-center gap-1 px-3 py-2 rounded-lg ${showInsightsPanel ? 'bg-cyan-400 text-gray-900' : 'bg-[rgba(34,211,238,.2)] border border-cyan-400 text-cyan-300'} font-semibold transition-all hover:bg-cyan-400 hover:text-gray-900`,
+                                                        className: `insights-toggle-button flex items-center gap-1 px-3 py-2 rounded-lg ${showInsightsPanel ? 'bg-cyan-400 text-gray-900' : 'bg-[rgba(59,130,246,.2)] border border-cyan-400 text-cyan-300'} font-semibold transition-all hover:bg-cyan-400 hover:text-gray-900`,
                                                         children: [
                                                             _jsx("svg", { 
                                                                 xmlns: "http://www.w3.org/2000/svg", 
@@ -589,7 +589,7 @@ const SimpleChatWithHistory = () => {
                                                     // Simple share button (no persistence)
                                                     _jsxs("button", { 
                                                         id: "shareBtn", 
-                                                        className: "insights-toggle-button flex items-center gap-1 px-3 py-2 rounded-lg bg-[rgba(34,211,238,.2)] border border-cyan-400 text-cyan-300 font-semibold transition-all hover:bg-cyan-400 hover:text-gray-900",
+                                                        className: "insights-toggle-button flex items-center gap-1 px-3 py-2 rounded-lg bg-[rgba(59,130,246,.2)] border border-cyan-400 text-cyan-300 font-semibold transition-all hover:bg-cyan-400 hover:text-gray-900",
                                                         onClick: () => {
                                                             if (navigator.share) {
                                                                 navigator.share({

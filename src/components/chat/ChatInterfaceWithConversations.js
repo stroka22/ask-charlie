@@ -479,7 +479,7 @@ const ChatInterfaceWithConversations = () => {
                                         className: `flex items-center gap-1 px-3 py-2 rounded-lg ${
                                             isFavorite 
                                                 ? 'bg-cyan-400 text-indigo-900' 
-                                                : 'bg-[rgba(34,211,238,.2)] border border-cyan-400 text-cyan-400'
+                                                : 'bg-[rgba(59,130,246,.2)] border border-cyan-400 text-cyan-400'
                                         } font-semibold transition-all hover:bg-cyan-400 hover:text-indigo-900`,
                                         title: isFavorite ? "Remove from favorites" : "Add to favorites",
                                         children: [
@@ -505,7 +505,7 @@ const ChatInterfaceWithConversations = () => {
                                 _jsxs("button", { 
                                     id: "insightsToggle", 
                                     onClick: () => setShowInsightsPanel(!showInsightsPanel),
-                                    className: `insights-toggle-button flex items-center gap-1 px-3 py-2 rounded-lg ${showInsightsPanel ? 'bg-cyan-400 text-indigo-900' : 'bg-[rgba(34,211,238,.2)] border border-cyan-400 text-cyan-400'} font-semibold transition-all hover:bg-cyan-400 hover:text-indigo-900`,
+                                    className: `insights-toggle-button flex items-center gap-1 px-3 py-2 rounded-lg ${showInsightsPanel ? 'bg-cyan-400 text-indigo-900' : 'bg-[rgba(59,130,246,.2)] border border-cyan-400 text-cyan-400'} font-semibold transition-all hover:bg-cyan-400 hover:text-indigo-900`,
                                     children: [
                                         _jsx("svg", { 
                                             xmlns: "http://www.w3.org/2000/svg", 
@@ -529,7 +529,7 @@ const ChatInterfaceWithConversations = () => {
                                         className: `insights-toggle-button flex items-center gap-1 px-3 py-2 rounded-lg ${
                                             isShared
                                                 ? 'bg-cyan-400 text-indigo-900' 
-                                                : 'bg-[rgba(34,211,238,.2)] border border-cyan-400 text-cyan-400'
+                                                : 'bg-[rgba(59,130,246,.2)] border border-cyan-400 text-cyan-400'
                                         } font-semibold transition-all hover:bg-cyan-400 hover:text-indigo-900`,
                                         children: [
                                             _jsx("svg", { 
@@ -550,7 +550,7 @@ const ChatInterfaceWithConversations = () => {
                                 isAuthenticated && !activeConversation && messages.length > 0 && (
                                     _jsxs("button", {
                                         onClick: () => setShowSaveModal(true),
-                                        className: "flex items-center gap-1 px-3 py-2 rounded-lg bg-[rgba(34,211,238,.2)] border border-cyan-400 text-cyan-400 font-semibold transition-all hover:bg-cyan-400 hover:text-indigo-900",
+                                        className: "flex items-center gap-1 px-3 py-2 rounded-lg bg-[rgba(59,130,246,.2)] border border-cyan-400 text-cyan-400 font-semibold transition-all hover:bg-cyan-400 hover:text-indigo-900",
                                         children: [
                                             _jsx("svg", {
                                                 xmlns: "http://www.w3.org/2000/svg",
