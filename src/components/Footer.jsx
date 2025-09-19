@@ -23,7 +23,7 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
             <Bot360Logo variant="light" size="lg" className="mb-4" />
             <p className="text-gray-300 mt-4">
-              Engage in AI-powered debates and lectures with the world's greatest thinkers.
+              Engage in AI-powered debates and lectures with History's Greatest Thinkers.
             </p>
           </div>
           
