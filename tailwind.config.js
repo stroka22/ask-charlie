@@ -16,8 +16,8 @@ module.exports = {
           100: '#fee2e2',
           200: '#fecaca',
           300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444', // brand primary (brighter red)
+          400: '#ff7a7a',
+          500: '#ff4d4d', // brand primary (brightest red)
           600: '#dc2626',
           700: '#b91c1c',
           800: '#991b1b',

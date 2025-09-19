@@ -79,7 +79,7 @@ const HomePage: React.FC = () => {
             ? window.open(pricingUrl, '_blank', 'noopener,noreferrer')
             : navigate(pricingUrl)
         }
-        className="fixed top-4 right-4 z-50 inline-flex justify-center items-center px-6 py-2 border-2 border-white text-sm font-medium rounded-full shadow-sm text-white bg-red-500 hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300 whitespace-nowrap transition-colors animate-pulse"
+        className="fixed top-4 right-4 z-50 inline-flex justify-center items-center px-6 py-2 border-2 border-white text-sm font-medium rounded-full shadow-sm text-white bg-red-400 hover:bg-red-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300 whitespace-nowrap transition-colors animate-pulse"
       >
         Unlock All Assistants – Upgrade to Premium
       </button>
