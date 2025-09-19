@@ -23,7 +23,7 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
             <Bot360Logo variant="light" size="lg" className="mb-4" />
             <p className="text-gray-300 mt-4">
-              Create engaging, AI-driven conversational experiences for your audience.
+              Engage in AI-powered debates and lectures with the world's greatest thinkers.
             </p>
           </div>
           
@@ -85,8 +85,8 @@ const Footer = () => {
               </a>
             </div>
             <p className="text-gray-300 mb-4">
-              <a href="mailto:contact@bot360.ai" className="hover:text-blue-200 transition-colors">
-                contact@bot360.ai
+              <a href="mailto:support@debatewithcharlie.com" className="hover:text-blue-200 transition-colors">
+                support@debatewithcharlie.com
               </a>
             </p>
             
