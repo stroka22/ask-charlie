@@ -52,14 +52,24 @@ const HomePage: React.FC = () => {
   return (
     <>
       {/* Global heavenly background for the entire page */}
-      <div className="fixed inset-0 bg-gradient-to-b from-indigo-950 via-indigo-900 to-indigo-800">
+      <div className="fixed inset-0 bg-gradient-to-b from-blue-950 via-blue-900 to-blue-800">
         {/* Subtle light rays effect */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-300/20 via-transparent to-transparent opacity-30"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent opacity-30"></div>
         
         {/* Cloud elements for spiritual vibe */}
         <div className="absolute top-1/4 left-1/4 w-64 h-24 bg-white rounded-full blur-3xl opacity-20 animate-float"></div>
         <div className="absolute top-1/3 right-1/4 w-80 h-32 bg-white rounded-full blur-3xl opacity-15 animate-float-delayed"></div>
         <div className="absolute bottom-1/4 left-1/3 w-72 h-28 bg-white rounded-full blur-3xl opacity-10 animate-float-slow"></div>
+
+        {/* Subtle cross watermark */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          className="absolute right-6 bottom-6 w-12 h-12 opacity-10 text-white"
+          fill="currentColor"
+        >
+          <path d="M10.5 2.25a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 .75.75v5.25h5.25a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-.75.75H13.5v9.75a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1-.75-.75V10.5H5.25a.75.75 0 0 1-.75-.75v-1.5a.75.75 0 0 1 .75-.75h5.25V2.25z" />
+        </svg>
       </div>
 
       {/* Upgrade CTA ----------------------------------------------------- */}
@@ -69,7 +79,7 @@ const HomePage: React.FC = () => {
             ? window.open(pricingUrl, '_blank', 'noopener,noreferrer')
             : navigate(pricingUrl)
         }
-        className="fixed top-4 right-4 z-50 inline-flex justify-center items-center px-6 py-2 border-2 border-white text-sm font-medium rounded-full shadow-sm text-gray-900 bg-cyan-400 hover:bg-cyan-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-300 whitespace-nowrap transition-colors animate-pulse"
+        className="fixed top-4 right-4 z-50 inline-flex justify-center items-center px-6 py-2 border-2 border-white text-sm font-medium rounded-full shadow-sm text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-300 whitespace-nowrap transition-colors animate-pulse"
       >
         Unlock All Assistants – Upgrade to Premium
       </button>
@@ -88,7 +98,7 @@ const HomePage: React.FC = () => {
           <div className="max-w-xl text-center lg:text-left space-y-6">
             <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow">
               Debate&nbsp;
-              <span className="text-cyan-400">Charlie&nbsp;Kirk</span>
+              <span className="text-red-400">Charlie&nbsp;Kirk</span>
             </h1>
             <p className="text-blue-100 text-lg">
               Test your worldview against Charlie’s sharp conservative arguments
@@ -96,7 +106,7 @@ const HomePage: React.FC = () => {
             </p>
             <button
               onClick={handleStartDebate}
-              className="inline-flex items-center justify-center px-8 py-3 font-semibold rounded-full bg-cyan-400 text-indigo-900 hover:bg-cyan-300 transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-300"
+              className="inline-flex items-center justify-center px-8 py-3 font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-500 transition-colors shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
               Start the Debate
             </button>
@@ -108,15 +118,15 @@ const HomePage: React.FC = () => {
               <img
                 src={CHARLIE.feature_image_url}
                 alt="Charlie Kirk debating on stage"
-                className="w-full h-auto rounded-lg shadow-lg border-2 border-cyan-400 object-cover"
+                className="w-full h-auto rounded-lg shadow-lg border-2 border-red-500 object-cover"
                 onError={(e) => {
                   /* Hide image if it fails to load */
                   if (e?.currentTarget) e.currentTarget.style.display = 'none';
                 }}
               />
             ) : (
-              <div className="w-full h-64 rounded-lg bg-gradient-to-br from-indigo-800 via-indigo-700 to-indigo-600 flex items-center justify-center border-2 border-cyan-400">
-                <span className="text-cyan-300 font-semibold">
+              <div className="w-full h-64 rounded-lg bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600 flex items-center justify-center border-2 border-red-500">
+                <span className="text-red-200 font-semibold">
                   Image coming soon
                 </span>
               </div>
