@@ -18,7 +18,7 @@ const HowItWorksPage = () => {
               Getting Started
             </h1>
             <p className="text-indigo-100 mb-6">
-              Pick an assistant, ask your questions, and save your journey
+              Pick a leader, ask your questions, and save your journey
               in&nbsp;
               <span className="text-cyan-300 font-semibold">My&nbsp;Conversations</span>.
             </p>
@@ -52,9 +52,9 @@ const HowItWorksPage = () => {
               <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                 <div className="flex-shrink-0 w-16 h-16 rounded-full bg-cyan-400 text-gray-900 flex items-center justify-center text-2xl font-bold">1</div>
                 <div>
-                  <h3 className="text-xl font-semibold text-cyan-300 mb-2">Choose an Assistant</h3>
+                  <h3 className="text-xl font-semibold text-cyan-300 mb-2">Choose a Leader</h3>
                   <p className="text-indigo-100">
-                    Browse a growing library of assistants covering topics such as language learning, career coaching, tech support, creative writing, and more. Each assistant responds using its own profile and knowledge base.
+                    Browse a growing library of leaders covering topics such as language learning, career coaching, tech support, creative writing, and more. Each leader responds using its own profile and knowledge base.
                   </p>
                 </div>
               </div>
@@ -65,7 +65,7 @@ const HowItWorksPage = () => {
                 <div>
                   <h3 className="text-xl font-semibold text-cyan-300 mb-2">Ask Questions</h3>
                   <p className="text-indigo-100">
-                    Chat naturally to get advice, explanations, brainstorming help, or just explore a topic. Assistants reply instantly with relevant insights and resources.
+                    Chat naturally to get advice, explanations, brainstorming help, or just explore a topic. Leaders reply instantly with relevant insights and resources.
                   </p>
                 </div>
               </div>
@@ -76,7 +76,7 @@ const HowItWorksPage = () => {
                 <div>
                   <h3 className="text-xl font-semibold text-cyan-300 mb-2">Save & Continue Your Journey</h3>
                   <p className="text-indigo-100">
-                    Save conversations, mark assistants as favourites, and pick up your learning journey any time. Everything lives in <strong>My Conversations</strong> for quick access.
+                    Save conversations, mark leaders as favourites, and pick up your learning journey any time. Everything lives in <strong>My Conversations</strong> for quick access.
                   </p>
                 </div>
               </div>
@@ -100,10 +100,10 @@ const HowItWorksPage = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-cyan-300">
-                    Assistant Conversations
+                    Leader Conversations
                   </h3>
                   <p className="text-indigo-100 text-sm">
-                    One-on-one dialogue with AI assistants grounded in their provided context.
+                    One-on-one dialogue with AI leaders grounded in their provided context.
                   </p>
                 </div>
               </div>
@@ -178,7 +178,7 @@ const HowItWorksPage = () => {
                     References &amp; Sources
                   </h3>
                   <p className="text-indigo-100 text-sm">
-                    Assistants can cite sources and links for deeper exploration.
+                    Leaders can cite sources and links for deeper exploration.
                   </p>
                 </div>
               </div>
@@ -210,7 +210,7 @@ const HowItWorksPage = () => {
                 to="/" 
                 className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-semibold transition-colors"
               >
-                Browse Assistants
+                Browse Leaders
               </Link>
             </div>
           </div>

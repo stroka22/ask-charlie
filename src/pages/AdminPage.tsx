@@ -179,7 +179,7 @@ const AdminPage: React.FC = () => {
       }
 
       await characterRepository.bulkCreateCharacters(charactersToCreate);
-      setSuccessMessage(`Successfully uploaded ${charactersToCreate.length} assistants.`);
+      setSuccessMessage(`Successfully uploaded ${charactersToCreate.length} leaders.`);
       fetchCharacters(); // Refresh list
     } catch (err) {
       console.error('CSV upload error:', err);
@@ -220,10 +220,10 @@ const AdminPage: React.FC = () => {
     try {
       if (editingCharacterId) {
         await characterRepository.updateCharacter(editingCharacterId, characterData);
-        setSuccessMessage('Assistant updated successfully!');
+        setSuccessMessage('Leader updated successfully!');
       } else {
         await characterRepository.createCharacter(characterData);
-        setSuccessMessage('Assistant created successfully!');
+        setSuccessMessage('Leader created successfully!');
       }
       resetForm();
       fetchCharacters(); // Refresh list
@@ -271,7 +271,7 @@ const AdminPage: React.FC = () => {
     setSuccessMessage(null);
     try {
       await characterRepository.deleteCharacter(id);
-      setSuccessMessage('Assistant deleted successfully!');
+      setSuccessMessage('Leader deleted successfully!');
       fetchCharacters(); // Refresh list
     } catch (err) {
       console.error('Character deletion error:', err);
@@ -289,7 +289,7 @@ const AdminPage: React.FC = () => {
     try {
       const newVisibility = !(character.is_visible ?? true); // Toggle current state, default to true
       await characterRepository.updateCharacter(character.id, { is_visible: newVisibility });
-      setSuccessMessage(`Assistant '${character.name}' visibility updated to ${newVisibility ? 'visible' : 'hidden'}.`);
+      setSuccessMessage(`Leader '${character.name}' visibility updated to ${newVisibility ? 'visible' : 'hidden'}.`);
       fetchCharacters(); // Refresh list
     } catch (err) {
       console.error('Character visibility toggle error:', err);
@@ -309,9 +309,9 @@ const AdminPage: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Admin Panel - Assistant Management</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Admin Panel - Leader Management</h1>
       <p className="text-gray-700 mb-4">
-        Welcome! Manage your assistants and related data here.
+        Welcome! Manage your leaders and related data here.
       </p>
 
       {/* Top-level tab navigation */}
@@ -325,7 +325,7 @@ const AdminPage: React.FC = () => {
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Assistants
+            Leaders
           </button>
           <button
             onClick={() => setActiveTab('groups')}
@@ -360,9 +360,9 @@ const AdminPage: React.FC = () => {
       <>
       {/* Part A: CSV Upload Tool */}
       <section className="mb-8 p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Bulk Upload Assistants (CSV)</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Bulk Upload Leaders (CSV)</h2>
         <p className="text-gray-600 mb-4">
-          Upload a CSV file to add or update multiple assistants. Expected fields: character_name, avatar_url,
+          Upload a CSV file to add or update multiple leaders. Expected fields: character_name, avatar_url,
           feature_image_url, short_biography, opening_sentence, persona_prompt, description, is_visible (true/false).
           Optional metadata: timeline_period, historical_context, geographic_location, key_scripture_references (or other
           reference tags), theological_significance, relationships (JSON string), study_questions.
@@ -379,11 +379,11 @@ const AdminPage: React.FC = () => {
       {/* Part B: Manual Character Creation/Edit Form */}
       <section className="p-6 bg-white rounded-lg shadow-md mb-8">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-          {editingCharacterId ? 'Edit Assistant' : 'Create New Assistant'}
+          {editingCharacterId ? 'Edit Leader' : 'Create New Leader'}
         </h2>
         <form onSubmit={handleFormSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Assistant Name</label>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700">Leader Name</label>
             <input
               type="text"
               id="name"
@@ -424,7 +424,7 @@ const AdminPage: React.FC = () => {
             ></textarea>
           </div>
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description (for assistant card)</label>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description (for leader card)</label>
             <textarea
               id="description"
               rows={3}
@@ -491,7 +491,7 @@ const AdminPage: React.FC = () => {
 
           {/* New section for Character Insights data */}
           <div className="mt-6 border-t border-gray-300 pt-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Assistant Insights</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">Leader Insights</h3>
             
             <div className="space-y-4">
               <div>
@@ -578,7 +578,7 @@ const AdminPage: React.FC = () => {
               disabled={isLoading}
               className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:bg-gray-400"
             >
-              {isLoading ? 'Saving...' : editingCharacterId ? 'Update Assistant' : 'Create Assistant'}
+              {isLoading ? 'Saving...' : editingCharacterId ? 'Update Leader' : 'Create Leader'}
             </button>
             {editingCharacterId && (
               <button
@@ -595,11 +595,11 @@ const AdminPage: React.FC = () => {
 
       {/* Character List with Search */}
       <section className="p-6 bg-white rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Existing Assistants</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Existing Leaders</h2>
         
         {/* Search input */}
         <div className="mb-6">
-          <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">Search Assistants</label>
+          <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">Search Leaders</label>
           <input
             type="text"
             id="search"
@@ -700,7 +700,7 @@ const AdminPage: React.FC = () => {
           </h2>
           <p className="text-gray-600 mb-6">
             (Coming soon) – As an administrator you will be able to view users
-            and promote them to the “pastor” role.
+            and promote them to the "pastor" role.
           </p>
         </section>
       )}

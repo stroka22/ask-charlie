@@ -82,7 +82,7 @@ const ScalableCharacterSelection: React.FC = () => {
       setFeaturedCharacter(jesus || (data.length > 0 ? data[0] : null));
     } catch (err) {
       console.error('Failed to fetch characters:', err);
-      setError('Failed to load assistants. Please try again later.');
+      setError('Failed to load leaders. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -508,8 +508,8 @@ const ScalableCharacterSelection: React.FC = () => {
       {renderAlphaNav()}
       
       <div className="max-w-7xl mx-auto bg-white/8 backdrop-blur-sm rounded-2xl p-6 border border-white/15 shadow-xl">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-center text-cyan-400 mb-8 tracking-tight drop-shadow-lg">
-          Choose Your Assistant
+        <h1 className="text-4xl md:text-5xl font-extrabold text-center text-[#0f172a] mb-8 tracking-tight drop-shadow-lg">
+          Choose Your Leader
         </h1>
         
         {/* Featured Character Section */}

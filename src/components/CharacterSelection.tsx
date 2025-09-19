@@ -98,7 +98,7 @@ const CharacterSelection: React.FC = () => {
       setCharacters(data);
     } catch (err) {
       console.error('Failed to fetch characters:', err);
-      setError('Failed to load assistants. Please try again later.');
+      setError('Failed to load leaders. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -414,7 +414,7 @@ const CharacterSelection: React.FC = () => {
               <span className="text-white text-xl">•</span>
             </div>
           </div>
-          <p className="text-white text-lg font-light">Loading assistants...</p>
+          <p className="text-white text-lg font-light">Loading leaders...</p>
         </div>
       </div>
     );
@@ -447,8 +447,8 @@ const CharacterSelection: React.FC = () => {
       {renderAlphaNav()}
       
       <div className="max-w-7xl mx-auto bg-white/8 backdrop-blur-sm rounded-2xl p-6 border border-white/15 shadow-xl">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-center text-primary-400 mb-8 tracking-tight drop-shadow-lg">
-          Choose Your Assistant
+        <h1 className="text-4xl md:text-5xl font-extrabold text-center text-[#0f172a] mb-8 tracking-tight drop-shadow-lg">
+          Choose Your Leader
         </h1>
         
         {/* Filter section */}
