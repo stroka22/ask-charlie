@@ -101,8 +101,8 @@ const HomePage: React.FC = () => {
               <span className="text-red-400">Charlie&nbsp;Kirk</span>
             </h1>
             <p className="text-blue-100 text-lg">
-              Test your worldview against Charlie’s sharp conservative arguments
-              or switch to Lecture mode for a guided explanation.
+              Engage in AI-powered debates and lectures with History’s Greatest
+              Thinkers.
             </p>
             <button
               onClick={handleStartDebate}
