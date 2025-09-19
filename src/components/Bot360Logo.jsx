@@ -22,12 +22,12 @@ const Bot360Logo = ({
     dark: {
       text: '#1e40af',        // Indigo-700
       orbital: '#1e40af',     // Indigo-700
-      ai: '#06b6d4',          // Cyan-500
+      ai: '#ef4444',          // Red-500 (patriotic accent)
     },
     light: {
       text: '#FFFFFF',        // White
       orbital: '#FFFFFF',     // White
-      ai: '#22d3ee',          // Cyan-400 (brighter for light mode)
+      ai: '#f87171',          // Red-400 (brighter for light mode)
     },
   };
 
