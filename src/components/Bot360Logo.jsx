@@ -27,7 +27,7 @@ const Bot360Logo = ({
     light: {
       text: '#FFFFFF',        // White
       orbital: '#FFFFFF',     // White
-      ai: '#f87171',          // Red-400 (brighter for light mode)
+      ai: '#ff4d4d',          // Brighter red accent
     },
   };
 
@@ -62,17 +62,14 @@ const Bot360Logo = ({
           width={sizeValues.iconSize}
           className="transition-colors duration-300"
         >
-          {/* Base Cross – Blue */}
-          <rect x="37" y="15" width="26" height="70" rx="8" fill="#1e3a8a" />
-          <rect x="15" y="37" width="70" height="26" rx="8" fill="#1e3a8a" />
-
-          {/* Middle Cross – White */}
-          <rect x="41" y="21" width="18" height="58" rx="6" fill="#ffffff" />
-          <rect x="21" y="41" width="58" height="18" rx="6" fill="#ffffff" />
-
-          {/* Inner Cross – Red */}
-          <rect x="45" y="27" width="10" height="46" rx="4" fill="#ef4444" />
-          <rect x="27" y="45" width="46" height="10" rx="4" fill="#ef4444" />
+          {/* Christian flag */}
+          {/* White field */}
+          <rect x="8" y="18" width="84" height="54" rx="6" fill="#ffffff" />
+          {/* Blue canton */}
+          <rect x="8" y="18" width="40" height="32" rx="4" fill="#1e3a8a" />
+          {/* Red Latin cross inside canton */}
+          <rect x="24" y="22" width="8" height="24" rx="2" fill="#ff4d4d" />
+          <rect x="16" y="30" width="24" height="8" rx="2" fill="#ff4d4d" />
         </svg>
       </div>
 

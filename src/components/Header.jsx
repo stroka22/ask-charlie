@@ -266,7 +266,7 @@ const Header = () => {
               </Link>
               <Link 
                 to="/signup" 
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-500 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-red-400 rounded-lg hover:bg-red-300 transition-colors"
               >
                 Sign Up
               </Link>
@@ -445,7 +445,7 @@ const Header = () => {
                 </Link>
                 <Link 
                   to="/signup" 
-                  className="px-3 py-2 text-sm text-center text-white bg-red-600 rounded-lg hover:bg-red-500 transition-colors"
+                  className="px-3 py-2 text-sm text-center text-white bg-red-400 rounded-lg hover:bg-red-300 transition-colors"
                 >
                   Sign Up
                 </Link>
@@ -456,7 +456,7 @@ const Header = () => {
       </div>
 
       {/* Patriotic stripe */}
-      <div className="h-0.5 w-full bg-gradient-to-r from-red-500 via-white to-blue-600"></div>
+      <div className="h-0.5 w-full bg-gradient-to-r from-red-400 via-white to-blue-600"></div>
     </header>
   );
 };
