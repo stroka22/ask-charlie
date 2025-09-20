@@ -17,7 +17,7 @@ const Footer = () => {
   return (
     <footer className="bg-blue-950 text-white w-full">
       {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-10">
+      <div className="w-full px-4 md:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Column */}
           <div className="col-span-1 md:col-span-2 lg:col-span-1">
@@ -121,7 +121,7 @@ const Footer = () => {
       
       {/* AI Disclaimer */}
       <div className="border-t border-blue-800 py-4">
-        <div className="container mx-auto px-4 text-center">
+        <div className="w-full px-4 md:px-6 lg:px-8 text-center">
           <p className="text-gray-400 text-sm">
             AI-generated content may be inaccurate or outdated and is provided for informational purposes only.
           </p>
@@ -130,7 +130,7 @@ const Footer = () => {
       
       {/* Copyright Bar */}
       <div className="bg-blue-950 py-4">
-        <div className="container mx-auto px-4 text-center">
+        <div className="w-full px-4 md:px-6 lg:px-8 text-center">
           <p className="text-gray-400 text-sm">
             &copy; {currentYear} Ask Charlie. All rights reserved.
           </p>
