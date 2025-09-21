@@ -15,7 +15,14 @@ const Footer = () => {
   };
   
   return (
-    <footer className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen bg-blue-950 text-white">
+    <footer
+      className="bg-blue-950 text-white"
+      style={{
+        width: '100vw',
+        marginLeft: 'calc(50% - 50vw)',
+        marginRight: 'calc(50% - 50vw)',
+      }}
+    >
       {/* Main Footer Content */}
       <div className="w-full px-4 md:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
