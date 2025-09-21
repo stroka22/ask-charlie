@@ -77,10 +77,8 @@ const HomePage = () => {
             _jsx("div", { className: "relative z-10 w-full", style: {
                     position: 'relative',
                     left: '50%',
-                    right: '50%',
+                    transform: 'translateX(-50%)',
                     width: '100vw',
-                    marginLeft: 'calc(50% - 50vw)',
-                    marginRight: 'calc(50% - 50vw)',
                     borderRadius: 0,
                     overflow: 'hidden',
                 }, children: _jsx("div", { className: "w-full min-h-[640px] md:min-h-[780px] bg-cover", style: {
@@ -99,7 +97,7 @@ const HomePage = () => {
             _jsx(FABCluster, {}),
 
             /* Glass container wrapping either selection or chat */
-            _jsx("div", { className: "relative z-10 flex items-start justify-center pt-10 md:pt-12 pb-10", children: _jsxs("div", { className: "chat-container w-full max-w-6xl h-[88vh] mx-4 md:mx-6 bg-white/5 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col", children: [
+            _jsx("div", { className: "relative z-10 flex items-start justify-center pt-4 md:pt-6 pb-8", children: _jsxs("div", { className: "chat-container w-full max-w-6xl h-[88vh] mx-4 md:mx-6 bg-white/5 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col", children: [
                         character
                             ? _jsx("main", { className: "flex-1 overflow-hidden", children: _jsx(ChatInterface, {}) })
                             : _jsx("div", { className: "flex-1 overflow-y-auto", children: _jsx(ScalableCharacterSelection, {}) }),
