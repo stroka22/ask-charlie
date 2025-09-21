@@ -83,7 +83,7 @@ const HomePage = () => {
                     overflow: 'hidden',
                 }, children: _jsx("div", { className: "w-full min-h-[640px] md:min-h-[780px] bg-cover", style: {
                         backgroundImage: "url('/hero.jpg')",
-                        backgroundPosition: 'left center',
+                        backgroundPosition: 'left 15%',
                     }, role: "img", "aria-label": "Debate hero image" }) }),
             /* Background layers (stars / gradient blobs) */
             _jsxs("div", { className: "fixed inset-0 z-0 bg-gradient-to-b from-blue-900 via-blue-800 to-blue-700", children: [
