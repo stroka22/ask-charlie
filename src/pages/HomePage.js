@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { useChat } from '../contexts/ChatContext.jsx';
 import ScalableCharacterSelection from '../components/ScalableCharacterSelection.jsx';
 import ChatInterface from '../components/chat/ChatInterface';
-import Footer from '../components/Footer';
 import FABCluster from '../components/FABCluster.jsx';
 import { getOwnerSlug } from '../services/tierSettingsService';
 import { characterRepository } from '../repositories/characterRepository';
@@ -100,8 +99,6 @@ const HomePage = () => {
                             _jsx("span", { className: "text-cyan-300 font-semibold", children: featured.name }),
                             _jsx(Link, { to: `/chat?character=${featured.id}`, className: "ml-auto px-4 py-1.5 bg-cyan-400 text-indigo-900 rounded-full text-sm font-semibold hover:bg-cyan-300 transition-colors", children: "Chat Now" })
                         ] }) }) })
-            /* Site footer */
-            , _jsx("div", { className: "relative z-10", children: _jsx(Footer, {}) })
         ] }));
 };
 export default HomePage;
