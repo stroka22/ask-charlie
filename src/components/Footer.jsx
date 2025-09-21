@@ -21,12 +21,11 @@ const Footer = () => {
         /* Full-bleed breakout that ignores any ancestor padding/radius */
         position: 'relative',
         left: '50%',
-        right: '50%',
+        transform: 'translateX(-50%)',
         width: '100vw',
-        marginLeft: 'calc(50% - 50vw)',
-        marginRight: 'calc(50% - 50vw)',
         borderRadius: 0,
         overflow: 'visible',
+        zIndex: 1,
       }}
     >
       {/* Main Footer Content */}

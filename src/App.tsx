@@ -221,6 +221,12 @@ function App(): JSX.Element {
     </AuthProvider>
   );
 
+  /* --------------------------------------------------------------
+   * Route-aware layout tweaks
+   * -------------------------------------------------------------- */
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
   if (DIRECT_RENDER) {
     return (
       <ErrorBoundary>
@@ -250,7 +256,8 @@ function App(): JSX.Element {
       <MobileLeadBannerGate />
       {/* Desktop modal (self-managed triggers) */}
       <LeadCaptureModal />
-      <main className="flex-1 px-4 md:px-6"><Routes>
+      {/* Apply horizontal page padding on every route except Home */}
+      <main className={isHome ? 'flex-1' : 'flex-1 px-4 md:px-6'}><Routes>
     {/* Public routes */}
     <Route path="/" element={<HomePage />} />
     <Route path="/login" element={<LoginPage />} />
