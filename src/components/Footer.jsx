@@ -15,7 +15,20 @@ const Footer = () => {
   };
   
   return (
-    <footer className="bg-blue-950 text-white w-full">
+    <footer
+      className="bg-blue-950 text-white"
+      style={{
+        /* Full-bleed breakout that ignores any ancestor padding/radius */
+        position: 'relative',
+        left: '50%',
+        right: '50%',
+        width: '100vw',
+        marginLeft: 'calc(50% - 50vw)',
+        marginRight: 'calc(50% - 50vw)',
+        borderRadius: 0,
+        overflow: 'visible',
+      }}
+    >
       {/* Main Footer Content */}
       <div className="w-full px-4 md:px-6 lg:px-8 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">

@@ -1,6 +1,5 @@
 import React from 'react';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 
 const CookiePolicyPage = () => {
   return (
@@ -102,8 +101,7 @@ const CookiePolicyPage = () => {
           </p>
         </div>
       </div>
-      
-      <Footer />
+
     </div>
   );
 };

@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { useChat } from '../contexts/ChatContext.jsx';
 import ScalableCharacterSelection from '../components/ScalableCharacterSelection.jsx';
 import ChatInterface from '../components/chat/ChatInterface';
-import Footer from '../components/Footer';
 import FABCluster from '../components/FABCluster.jsx';
 import { getOwnerSlug } from '../services/tierSettingsService';
 import { characterRepository } from '../repositories/characterRepository';
@@ -74,6 +73,8 @@ const HomePage = () => {
      * Layout: full-screen dark gradient + floating glass container
      * ------------------------------------------------------------------ */
     return (_jsxs(_Fragment, { children: [
+            /* Hero image */
+            _jsx("div", { className: "relative z-10 w-full", children: _jsx("div", { className: "w-full min-h-[420px] md:min-h-[520px] bg-center bg-cover", style: { backgroundImage: "url('/hero.jpg')" }, role: "img", "aria-label": "Debate hero image" }) }),
             /* Background layers (stars / gradient blobs) */
             _jsxs("div", { className: "fixed inset-0 z-0 bg-gradient-to-b from-blue-900 via-blue-800 to-blue-700", children: [
                     _jsx("div", { className: "absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-200/20 via-transparent to-transparent opacity-30" }),
@@ -100,8 +101,6 @@ const HomePage = () => {
                             _jsx("span", { className: "text-cyan-300 font-semibold", children: featured.name }),
                             _jsx(Link, { to: `/chat?character=${featured.id}`, className: "ml-auto px-4 py-1.5 bg-cyan-400 text-indigo-900 rounded-full text-sm font-semibold hover:bg-cyan-300 transition-colors", children: "Chat Now" })
                         ] }) }) })
-            /* Site footer */
-            , _jsx("div", { className: "relative z-10", children: _jsx(Footer, {}) })
         ] }));
 };
 export default HomePage;

@@ -46,6 +46,7 @@ import DebugPanel from './components/DebugPanel';
 import Header from './components/Header';
 import LeadCaptureBanner from './components/LeadCaptureBanner';
 import LeadCaptureModal from './components/LeadCaptureModal';
+import Footer from './components/Footer';
 
 // ---------------------------------------------------------------------------
 // Helper Component
@@ -301,7 +302,7 @@ function App(): JSX.Element {
 
     {/* Fallback route */}
     <Route path="*" element={<Navigate to="/" replace={true} />} />
-    </Routes></main></div>
+    </Routes></main></div><Footer />
   </></Providers></ErrorBoundary>);
 }
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import Header from '../components/Header';
-import Footer from '../components/Footer';
 
 const PrivacyPage = () => {
   return (
@@ -131,8 +130,6 @@ const PrivacyPage = () => {
           </p>
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 };
