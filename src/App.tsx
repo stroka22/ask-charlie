@@ -302,7 +302,7 @@ function App(): JSX.Element {
 
     {/* Fallback route */}
     <Route path="*" element={<Navigate to="/" replace={true} />} />
-    </Routes></main><Footer /></div>
+    </Routes></main></div><Footer />
   </></Providers></ErrorBoundary>);
 }
 
