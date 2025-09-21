@@ -83,7 +83,7 @@ const HomePage = () => {
                     marginRight: 'calc(50% - 50vw)',
                     borderRadius: 0,
                     overflow: 'hidden',
-                }, children: _jsx("div", { className: "w-full min-h-[420px] md:min-h-[560px] bg-cover", style: {
+                }, children: _jsx("div", { className: "w-full min-h-[640px] md:min-h-[780px] bg-cover", style: {
                         backgroundImage: "url('/hero.jpg')",
                         backgroundPosition: 'left center',
                     }, role: "img", "aria-label": "Debate hero image" }) }),
