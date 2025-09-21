@@ -73,8 +73,20 @@ const HomePage = () => {
      * Layout: full-screen dark gradient + floating glass container
      * ------------------------------------------------------------------ */
     return (_jsxs(_Fragment, { children: [
-            /* Hero image */
-            _jsx("div", { className: "relative z-10 w-full", children: _jsx("div", { className: "w-full min-h-[420px] md:min-h-[520px] bg-center bg-cover", style: { backgroundImage: "url('/hero.jpg')" }, role: "img", "aria-label": "Debate hero image" }) }),
+            /* Hero image (full-bleed) */
+            _jsx("div", { className: "relative z-10 w-full", style: {
+                    position: 'relative',
+                    left: '50%',
+                    right: '50%',
+                    width: '100vw',
+                    marginLeft: 'calc(50% - 50vw)',
+                    marginRight: 'calc(50% - 50vw)',
+                    borderRadius: 0,
+                    overflow: 'hidden',
+                }, children: _jsx("div", { className: "w-full min-h-[420px] md:min-h-[560px] bg-cover", style: {
+                        backgroundImage: "url('/hero.jpg')",
+                        backgroundPosition: 'left center',
+                    }, role: "img", "aria-label": "Debate hero image" }) }),
             /* Background layers (stars / gradient blobs) */
             _jsxs("div", { className: "fixed inset-0 z-0 bg-gradient-to-b from-blue-900 via-blue-800 to-blue-700", children: [
                     _jsx("div", { className: "absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-200/20 via-transparent to-transparent opacity-30" }),
@@ -87,7 +99,7 @@ const HomePage = () => {
             _jsx(FABCluster, {}),
 
             /* Glass container wrapping either selection or chat */
-            _jsx("div", { className: "relative z-10 flex items-start justify-center pt-24 md:pt-32 pb-10", children: _jsxs("div", { className: "chat-container w-full max-w-6xl h-[88vh] mx-4 md:mx-6 bg-white/5 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col", children: [
+            _jsx("div", { className: "relative z-10 flex items-start justify-center pt-10 md:pt-12 pb-10", children: _jsxs("div", { className: "chat-container w-full max-w-6xl h-[88vh] mx-4 md:mx-6 bg-white/5 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col", children: [
                         character
                             ? _jsx("main", { className: "flex-1 overflow-hidden", children: _jsx(ChatInterface, {}) })
                             : _jsx("div", { className: "flex-1 overflow-y-auto", children: _jsx(ScalableCharacterSelection, {}) }),
