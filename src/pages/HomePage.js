@@ -74,7 +74,7 @@ const HomePage = () => {
      * ------------------------------------------------------------------ */
     return (_jsxs(_Fragment, { children: [
             /* Hero image (full-bleed) */
-            _jsx("div", { className: "relative z-10 w-full", style: {
+            _jsx("div", { className: "relative z-10 w-full mt-16 md:mt-20", style: {
                     position: 'relative',
                     left: '50%',
                     transform: 'translateX(-50%)',
