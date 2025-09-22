@@ -9,7 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "generate:downloads": "node scripts/generateDownloads.mjs",
-    "generate:logo-pack": "node scripts/generateLogoPack.mjs"
+    "generate:logo-pack": "node scripts/generateLogoPack.mjs",
+    "db:apply-rls-fixes": "node scripts/apply-rls-fixes.mjs sql/2025-09-22-rls-fixes.sql",
+    "db:promote-superadmin": "node scripts/promote-user.mjs stroka2@verizon.net"
   },
   "dependencies": {
     "@stripe/stripe-js": "^7.4.0",
@@ -40,6 +42,7 @@
     "globals": "^16.0.0",
     "jszip": "^3.10.1",
     "pdfkit": "^0.17.2",
+    "pg": "^8.16.3",
     "postcss": "^8.5.6",
     "pptxgenjs": "^4.0.1",
     "puppeteer": "^24.19.0",
