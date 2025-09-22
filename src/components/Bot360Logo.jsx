@@ -70,9 +70,9 @@ const Bot360Logo = ({
         </svg>
       </div>
 
-      {/* Text: BOT360 */}
+      {/* Brand Text */}
       <div className="flex items-center font-bold tracking-tight transition-colors duration-300">
-        {/* Ask (normal colour) */}
+        {/* "Debate with" (normal colour) */}
         <span
           className="transition-colors duration-300 font-medium"
           style={{
@@ -80,7 +80,7 @@ const Bot360Logo = ({
             fontSize: sizeValues.fontSize,
           }}
         >
-          Ask
+          Debate with
         </span>
 
         {/* Charlie (highlighted) */}
